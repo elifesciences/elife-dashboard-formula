@@ -1,0 +1,11 @@
+base:
+    '*':
+        - base
+        - base.postgresql
+        - base.nginx
+        - base.uwsgi
+        - base.acme
+        - base.no-more-daemon
+        - elife-dashboard
+        - elife-dashboard.uwsgi
+        - elife-dashboard.scheduler
