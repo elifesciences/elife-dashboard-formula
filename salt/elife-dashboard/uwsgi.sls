@@ -5,7 +5,7 @@ app-nginx-conf:
         - source: salt://elife-dashboard/config/etc-nginx-sitesenabled-app.conf
         - require:
             - cmd: create-production-web-user
-            {% if pillar.sys.env != 'dev' %}
+            {% if pillar.elife.env != 'dev' %}
             - cmd: acme-fetch-certs
             {% endif %}
 
