@@ -64,7 +64,7 @@ aws-credentials:
         - user: www-data
         - group: www-data
         - name: /var/www/.aws/credentials
-        - source: salt://base/templates/aws-credentials
+        - source: salt://elife/templates/aws-credentials
         - context:
             access_id: {{ app.aws.access_id }}
             secret_access_key: {{ app.aws.secret_access_key }}
@@ -168,12 +168,11 @@ app-done:
         - template: jinja
         - require:
             - cmd: app-done
-            - file: {{ app.name }}-process-queue-daemon-log-file
 
 {{ app.name }}-process-queue-daemons-task:
     file.managed:
         - name: /etc/init/{{ app.name }}-process-queue-daemons.conf
-        - source: salt://base/config/etc-init-multiple-processes.conf
+        - source: salt://elife/config/etc-init-multiple-processes.conf
         - template: jinja
         - context:
             process: {{ app.name }}-process-queue-daemon
