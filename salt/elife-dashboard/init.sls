@@ -8,7 +8,7 @@ install-{{ app.name }}:
         - user: {{ user }}
         - group: {{ user }}
 
-    git.latest:
+    builder.git_latest:
         - user: {{ user }}
         - name: git@github.com:elifesciences/elife-dashboard.git
         - rev: {{ salt['elife.rev']() }}
