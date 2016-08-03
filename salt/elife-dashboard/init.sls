@@ -112,10 +112,12 @@ app-db-user:
         - refresh_password: True
         
         - db_user: {{ pillar.elife.db_root.username }}
-        - db_password: {{ pillar.elife.db_root.password }}
         {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
+        - db_password: {{ salt['elife.cfg']('project.rds_password') }}
         - db_host: {{ salt['elife.cfg']('cfn.outputs.RDSHost') }}
         - db_port: {{ salt['elife.cfg']('cfn.outputs.RDSPort') }}
+        {% else %}
+        - db_password: {{ pillar.elife.db_root.password }}
         {% endif %}
         - createdb: True
 
@@ -123,13 +125,13 @@ app-db-exists:
     postgres_database.present:
         - name: {{ app.db.name }}
         - owner: {{ app.db.username }}
-
-        {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
-        # not sure if first two are necessary
         - db_user: {{ pillar.elife.db_root.username }}
-        - db_password: {{ pillar.elife.db_root.password }}
+        {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
+        - db_password: {{ salt['elife.cfg']('project.rds_password') }}
         - db_host: {{ salt['elife.cfg']('cfn.outputs.RDSHost') }}
         - db_port: {{ salt['elife.cfg']('cfn.outputs.RDSPort') }}
+        {% else %}
+        - db_password: {{ pillar.elife.db_root.password }}
         {% endif %}
 
         - require:
