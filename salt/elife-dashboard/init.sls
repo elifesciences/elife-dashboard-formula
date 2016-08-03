@@ -25,7 +25,7 @@ app-link:
         - cwd: /srv/
         - name: ln -sfT elife-dashboard app
         - require:
-            - file: install-elife-dashboard
+            - install-elife-dashboard
 
 configure-{{ app.name }}:
     file.managed:
@@ -46,7 +46,7 @@ configure-{{ app.name }}:
         - name: ./install.sh
         - require:
             - file: configure-{{ app.name }}
-            - git: install-elife-dashboard
+            - install-elife-dashboard
 
 #
 # auth
