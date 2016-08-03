@@ -82,6 +82,7 @@ app-log-file:
         - group: {{ webuser }}
         - mode: 660
 
+
 app-syslog-conf:
     file.managed:
         - name: /etc/syslog-ng/conf.d/app.conf
@@ -93,7 +94,11 @@ app-syslog-conf:
         - listen_in:
             - service: syslog-ng
 
-
+process-queue-daemon-log-file:
+    file.managed:
+        - name: /var/log/process-queue-daemon.log
+        - user: {{ user }}
+        - group: {{ user }}
 
 #
 # db
