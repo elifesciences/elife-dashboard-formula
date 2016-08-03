@@ -4,4 +4,4 @@ elife-dashboard-process-queue-daemons-start:
         - require:
             - file: elife-dashboard-process-queue-daemons-task
         - watch:
-            - git: install-elife-dashboard
+            - install-elife-dashboard

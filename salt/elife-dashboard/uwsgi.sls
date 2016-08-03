@@ -15,7 +15,7 @@ app-uwsgi-conf:
         - source: salt://elife-dashboard/config/srv-elife-dashboard-uwsgi.ini
         - template: jinja
         - require:
-            - git: install-elife-dashboard
+            - install-elife-dashboard
 
 old-uwsgi-app:
     file.absent:
@@ -37,7 +37,7 @@ uwsgi-app:
             - file: app-nginx-conf
             - file: app-log-file
         - watch:
-            - git: install-elife-dashboard
+            - install-elife-dashboard
             # restart uwsgi if nginx service changes 
             - service: nginx-server-service
 

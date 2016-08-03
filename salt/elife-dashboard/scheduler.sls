@@ -64,7 +64,7 @@ configure-{{ app.name }}:
         - force: True
         - template: jinja
         - require:
-            - git: install-{{ app.name }}
+            - install-{{ app.name }}
             - postgres_database: {{ app.name }}-db-exists
 
 configure-{{ app.name }}-log:
@@ -93,7 +93,7 @@ configure-{{ app.name }}-log:
         - source: salt://elife-dashboard/config/srv-{{ app.name }}-uwsgi.ini
         - template: jinja
         - require:
-            - git: install-{{ app.name }}
+            - install-{{ app.name }}
 
 # temporary state. 
 old-uwsgi-{{ app.name }}:
@@ -118,7 +118,7 @@ uwsgi-{{ app.name }}:
             - file: app-nginx-conf
             - file: app-log-file
         - watch:
-            - git: install-{{ app.name }}
+            - install-{{ app.name }}
             # restart uwsgi if nginx service changes
             - service: nginx-server-service
 
