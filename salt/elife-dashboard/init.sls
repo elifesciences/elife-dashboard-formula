@@ -9,8 +9,9 @@ install-{{ app.name }}:
         - group: {{ user }}
 
     builder.git_latest:
-        - user: {{ user }}
         - name: git@github.com:elifesciences/elife-dashboard.git
+        - identity: {{ pillar.elife.deploy_user.key or '' }}
+        - user: {{ user }}
         - rev: {{ salt['elife.rev']() }}
         - branch: {{ salt['elife.branch']() }}
         - force_fetch: True
