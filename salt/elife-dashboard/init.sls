@@ -34,8 +34,6 @@ configure-{{ app.name }}:
         - name: /srv/app/settings.py
         - source:
             - salt://elife-dashboard/config/srv-app-dashboard-{{ pillar.elife.env }}_settings.py
-            # TODO: retire this lookup
-            - salt://elife-dashboard/config/srv-app-dashboard-{{ salt['elife.cfg']('project.branch') }}_settings.py
             - salt://elife-dashboard/config/srv-app-dashboard-default_settings.py
         - template: jinja
         - watch_in:
