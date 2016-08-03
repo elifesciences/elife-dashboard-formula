@@ -110,7 +110,6 @@ app-db-user:
         - encrypted: True
         - password: {{ app.db.password }}
         - refresh_password: True
-        
         - db_user: {{ pillar.elife.db_root.username }}
         {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
         - db_password: {{ salt['elife.cfg']('project.rds_password') }}
