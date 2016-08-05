@@ -72,6 +72,7 @@ configure-{{ app.name }}-log:
         - name: /srv/{{ app.name }}/src/elife-article-scheduler.log
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.webserver.username }}
+        - mode: 664
         - require:
             - file: configure-{{ app.name }}
 
