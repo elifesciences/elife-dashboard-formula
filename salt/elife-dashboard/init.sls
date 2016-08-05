@@ -17,6 +17,7 @@ install-{{ app.name }}:
         - force_fetch: True
         - force_checkout: True
         - force_reset: True
+        - fetch_pull_requests: True
         - target: /srv/elife-dashboard
         - require:
             - file: install-elife-dashboard
