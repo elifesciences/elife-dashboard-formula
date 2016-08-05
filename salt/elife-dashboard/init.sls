@@ -11,14 +11,13 @@ install-{{ app.name }}:
     builder.git_latest:
         - name: git@github.com:elifesciences/elife-dashboard.git
         - identity: {{ pillar.elife.deploy_user.key or '' }}
-        - user: {{ user }}
         - rev: {{ salt['elife.rev']() }}
         - branch: {{ salt['elife.branch']() }}
+        - target: /srv/elife-dashboard
         - force_fetch: True
         - force_checkout: True
         - force_reset: True
         - fetch_pull_requests: True
-        - target: /srv/elife-dashboard
         - require:
             - file: install-elife-dashboard
 
