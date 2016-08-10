@@ -6,6 +6,7 @@ base:
         - elife.uwsgi
         - elife.acme
         - elife.no-more-daemon
+        - elife.nodejs6
         - elife-dashboard
         - elife-dashboard.uwsgi
         - elife-dashboard.scheduler
