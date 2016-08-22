@@ -3,15 +3,9 @@
 {% set webuser = pillar.elife.webserver.username %}
 
 install-{{ app.name }}:
-    file.directory:
-        - name: /srv/elife-dashboard
-        - user: {{ user }}
-        - group: {{ user }}
-
     builder.git_latest:
         - name: git@github.com:elifesciences/elife-dashboard.git
         - identity: {{ pillar.elife.projects_builder.key or '' }}
-        - user: {{ pillar.elife.deploy_user.username }}
         - rev: {{ salt['elife.rev']() }}
         - branch: {{ salt['elife.branch']() }}
         - target: /srv/elife-dashboard
@@ -19,8 +13,17 @@ install-{{ app.name }}:
         - force_checkout: True
         - force_reset: True
         - fetch_pull_requests: True
+
+    file.directory:
+        - name: /srv/elife-dashboard
+        - user: {{ user }}
+        - group: {{ user }}
+        - recurse:
+            - user
+            - group
         - require:
-            - file: install-elife-dashboard
+            - builder: install-elife-dashboard
+
 
 app-link:
     cmd.run:
