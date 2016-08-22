@@ -11,6 +11,7 @@ install-{{ app.name }}:
     builder.git_latest:
         - name: git@github.com:elifesciences/elife-dashboard.git
         - identity: {{ pillar.elife.projects_builder.key or '' }}
+        - user: {{ pillar.elife.deploy_user.username }}
         - rev: {{ salt['elife.rev']() }}
         - branch: {{ salt['elife.branch']() }}
         - target: /srv/elife-dashboard
