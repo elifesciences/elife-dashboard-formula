@@ -24,6 +24,14 @@ install-{{ app.name }}:
         - require:
             - builder: install-elife-dashboard
 
+npm-install:
+    cmd.run:
+        - name: npm install
+        - cwd: /srv/elife-dashboard
+        - user: {{ user }}
+        - require:
+            - install-elife-dashboard
+
 
 app-link:
     cmd.run:
@@ -163,6 +171,7 @@ app-done:
         - require:
             - cmd: load-db-schema
             - cmd: configure-{{ app.name }}
+            - cmd: npm-install
 
 #
 # process queue
