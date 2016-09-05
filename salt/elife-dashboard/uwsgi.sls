@@ -6,7 +6,7 @@ app-nginx-conf:
         - require:
             - cmd: create-production-web-user
             {% if pillar.elife.env != 'dev' %}
-            - cmd: acme-fetch-certs
+            - cmd: web-ssl-enabled
             {% endif %}
 
 {% if salt['elife.cfg']('cfn.outputs.DomainName') %}
