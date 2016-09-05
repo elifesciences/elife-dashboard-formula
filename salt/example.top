@@ -4,7 +4,6 @@ base:
         - elife.postgresql
         - elife.nginx
         - elife.uwsgi
-        - elife.acme
         - elife.no-more-daemon
         - elife.nodejs6
         - elife-dashboard
