@@ -59,7 +59,6 @@ configure-{{ app.name }}:
         - name: /srv/{{ app.name }}/src/core/settings.py
         - source:
             - salt://elife-dashboard/config/srv-{{ app.name }}-src-core-{{ pillar.elife.env }}_settings.py
-            - salt://elife-dashboard/config/srv-{{ app.name }}-src-core-{{ salt['elife.cfg']('project.branch') }}_settings.py
             - salt://elife-dashboard/config/srv-{{ app.name }}-default_settings.py
         - user: {{ pillar.elife.deploy_user.username }}
         - force: True
