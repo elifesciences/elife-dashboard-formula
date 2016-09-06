@@ -2,13 +2,7 @@
 {% set dash = pillar.elife_dashboard %}
 
 install-{{ app.name }}:
-    file.directory:
-        - name: /srv/{{ app.name }}
-        - user: {{ pillar.elife.deploy_user.username }}
-        - group: {{ pillar.elife.deploy_user.username }}
-
     git.latest:
-        - user: {{ pillar.elife.deploy_user.username }}
         - name: ssh://git@github.com/elifesciences/{{ app.name }}
         - identity: {{ pillar.elife.projects_builder.key or '' }}
         # note: elife-article-scheduler is always deployed as master
@@ -20,8 +14,17 @@ install-{{ app.name }}:
         - force_fetch: True
         - force_checkout: True
         - force_reset: True
+
+    file.directory:
+        - name: /srv/{{ app.name }}
+        - user: {{ pillar.elife.deploy_user.username }}
+        - group: {{ pillar.elife.deploy_user.username }}
+        - recurse:
+            - user
+            - group
         - require:
-            - file: install-{{ app.name }}
+            - git: install-{{ app.name }}
+
 
 
 #
