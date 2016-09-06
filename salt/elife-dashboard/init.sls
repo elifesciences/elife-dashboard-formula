@@ -14,13 +14,10 @@ install-{{ app.name }}:
         - force_reset: True
         - fetch_pull_requests: True
 
-    file.directory:
-        - name: /srv/elife-dashboard
-        - user: {{ user }}
-        - group: {{ user }}
-        - recurse:
-            - user
-            - group
+    # thanks to node_modules containing 40K files, file.directory is too slow
+    cmd.run:
+        - chmod -R {{ user }}:{{ user }} *
+        - cwd: /srv/elife-dashboard
         - require:
             - builder: install-elife-dashboard
 
