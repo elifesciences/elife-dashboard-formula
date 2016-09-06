@@ -16,7 +16,7 @@ install-{{ app.name }}:
 
     # thanks to node_modules containing 40K files, file.directory is too slow
     cmd.run:
-        - name: chmod -R {{ user }}:{{ user }} *
+        - name: chown -R {{ user }}:{{ user }} *
         - cwd: /srv/elife-dashboard
         - require:
             - builder: install-elife-dashboard
