@@ -31,6 +31,7 @@ npm-install:
         - user: {{ user }}
         - require:
             - install-elife-dashboard
+            - nodejs
 
 
 app-link:
