@@ -10,7 +10,10 @@ install-{{ app.name }}:
     git.latest:
         - user: {{ pillar.elife.deploy_user.username }}
         - name: ssh://git@github.com/elifesciences/{{ app.name }}
-        # note: elife-article-scheduler follows the same branch names as the dashboard
+        - identity: {{ pillar.elife.projects_builder.key or '' }}
+        # note: elife-article-scheduler is always deployed as master
+        # until it has its own instance, we cannot a revision
+        # using build vars
         - rev: {{ salt['elife.cfg']('project.branch', 'master') }}
         - branch: {{ salt['elife.cfg']('project.branch', 'master') }}
         - target: /srv/{{ app.name }}
