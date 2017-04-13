@@ -162,6 +162,28 @@ load-db-schema:
         - require:
             - postgres_database: app-db-exists
 
+db-perms-to-rds_superuser:
+    cmd.script:
+        - name: salt://elife/scripts/rds-perms.sh
+        - template: jinja
+        - defaults:
+            user: {{ app.db.username }}
+            pass: {{ app.db.password }}
+        - require:
+            - load-db-schema
+
+ubr-app-db-backup:
+    file.managed:
+        - name: /etc/ubr/elife-dashboard-backup.yaml
+        - source: salt://elife-dashboard/config/etc-ubr-elife-dashboard-backup.yaml
+        - template: jinja
+        - require:
+            - load-db-schema
+
+#
+#
+#
+
 # hook to allow the general purpose daemon code to do it's thing
 app-done:
     cmd.run: 
