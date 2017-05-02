@@ -1,2 +1,2 @@
 postgresql-database:
-    - {{ salt['elife.cfg']('project.rds_dbname') or pillar.elife_dashboard.db.name }}
+    - {{ pillar.elife_dashboard.db.name }}

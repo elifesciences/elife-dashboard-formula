@@ -17,7 +17,6 @@ elife_dashboard:
         username: username
         password: password
 
-
 elife_article_scheduler:
     name: elife-article-scheduler
 
