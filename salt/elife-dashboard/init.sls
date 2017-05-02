@@ -169,6 +169,7 @@ db-perms-to-rds_superuser:
         - defaults:
             user: {{ app.db.username }}
             pass: {{ app.db.password }}
+            otherdb: {{ app.db.name }}
         - require:
             - load-db-schema
 
