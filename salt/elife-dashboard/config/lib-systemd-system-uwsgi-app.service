@@ -1,0 +1,10 @@
+[Unit]
+Description="uWSGI server"
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Restart=on-failure
+ExecStart=/srv/app/venv/bin/uwsgi --die-on-term --ini /srv/app/uwsgi.ini

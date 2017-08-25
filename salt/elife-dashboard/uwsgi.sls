@@ -10,12 +10,18 @@ app-nginx-conf:
             {% endif %}
 
 {% if salt['elife.cfg']('cfn.outputs.DomainName') %}
+#dashboard-unencrypted-redirect:
+#    file.symlink:
+#        - name: /etc/nginx/sites-enabled/unencrypted-redirect.conf
+#        - target: /etc/nginx/sites-available/unencrypted-redirect.conf
+#        - require:
+#            - app-nginx-conf
+
+# we use HSTS for the redirection
+# we typically have port 80 closed externally and allow unencrypted internally
 dashboard-unencrypted-redirect:
-    file.symlink:
+    file.absent:
         - name: /etc/nginx/sites-enabled/unencrypted-redirect.conf
-        - target: /etc/nginx/sites-available/unencrypted-redirect.conf
-        - require:
-            - app-nginx-conf
 {% endif %}
 
 app-uwsgi-conf:
@@ -26,22 +32,24 @@ app-uwsgi-conf:
         - require:
             - install-elife-dashboard
 
-old-uwsgi-app:
-    file.absent:
-        - name: /etc/init.d/uwsgi-app
-
-uwsgi-app:
+uwsgi-app-upstart:
     file.managed:
         - name: /etc/init/uwsgi-app.conf
         - source: salt://elife-dashboard/config/etc-init-uwsgi-app.conf
         - mode: 755
 
+uwsgi-app-systemd:
+    file.managed:
+        - name: /lib/systemd/system/uwsgi-app.service
+        - source: salt://elife-dashboard/config/lib-systemd-system-uwsgi-app.service
+
+uwsgi-app:
     service.running:
         - enable: True
         - require:
+            - uwsgi-app-upstart
+            - uwsgi-app-systemd
             - file: uwsgi-params
-            - pip: uwsgi-pkg
-            - file: uwsgi-app
             - file: app-uwsgi-conf
             - file: app-nginx-conf
             - file: app-log-file

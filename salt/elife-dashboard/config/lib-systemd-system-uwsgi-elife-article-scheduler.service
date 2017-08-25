@@ -1,0 +1,11 @@
+[Unit]
+Description="elife-article-scheduler uWSGI server"
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+StandardError=syslog
+Restart=on-failure
+ExecStart=/srv/elife-article-scheduler/venv/bin/uwsgi --die-on-term --ini /srv/elife-article-scheduler/uwsgi.ini
