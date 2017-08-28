@@ -25,6 +25,11 @@ install-{{ app.name }}:
         - require:
             - git: install-{{ app.name }}
 
+    cmd.run:
+        - cwd: /srv/{{ app.name }}
+        - name: ./install.sh
+        - require:
+            - file: install-{{ app.name }}
 
 
 #
@@ -138,5 +143,3 @@ publish-articles-cron:
         - minute: '*'
         - require:
             - file: configure-{{ app.name }}
-        - onlyif:
-            - test -f /srv/{{ app.name }}/manage.sh
