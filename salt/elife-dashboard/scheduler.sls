@@ -8,8 +8,8 @@ install-{{ app.name }}:
         # note: elife-article-scheduler is always deployed as master
         # until it has its own instance, we cannot a revision
         # using build vars
-        - rev: {{ salt['elife.cfg']('project.branch', 'master') }}
-        - branch: {{ salt['elife.cfg']('project.branch', 'master') }}
+        - rev: master
+        - branch: master
         - target: /srv/{{ app.name }}
         - force_fetch: True
         - force_checkout: True
@@ -129,6 +129,7 @@ uwsgi-{{ app.name }}:
             - {{ app.name }}-uwsgi-conf
             - {{ app.name }}-uwsgi-conf
             - {{ app.name }}-nginx-conf
+            
             - configure-{{ app.name }}-log
         - watch:
             - install-{{ app.name }}
