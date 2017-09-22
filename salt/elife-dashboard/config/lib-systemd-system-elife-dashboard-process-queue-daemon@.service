@@ -1,0 +1,13 @@
+[Unit]
+Description="elife-dashboard-process-queue-daemon"
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Restart=on-failure
+RestartStopSec=10
+User={{ pillar.elife.deploy_user.username }}
+WorkingDirectory=/srv/elife-dashboard/
+ExecStart /bin/bash ./process_dashboard_queue.sh %I

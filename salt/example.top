@@ -9,3 +9,4 @@ base:
         - elife-dashboard
         - elife-dashboard.uwsgi
         - elife-dashboard.scheduler
+        #- elife-dashboard.processes
