@@ -33,10 +33,12 @@ install-{{ app.name }}:
 
 # ensure local postgresql is running
 # when an rds instance is detected, the local service is stopped
+# article-scheduler is an exception to that rule
 extend:
     postgresql:
         service:
             - running
+            - enable: True
 
 {{ app.name }}-db-user:
     postgres_user.present:
