@@ -31,6 +31,13 @@ install-{{ app.name }}:
 # db
 #
 
+# ensure local postgresql is running
+# when an rds instance is detected, the local service is stopped
+extend:
+    postgresql:
+        service:
+            - running
+
 {{ app.name }}-db-user:
     postgres_user.present:
         - name: {{ app.db.username }}
