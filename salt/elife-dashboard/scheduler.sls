@@ -5,11 +5,17 @@ install-{{ app.name }}:
     git.latest:
         - name: ssh://git@github.com/elifesciences/{{ app.name }}
         - identity: {{ pillar.elife.projects_builder.key or '' }}
+
         # note: elife-article-scheduler is always deployed as master
         # until it has its own instance, we cannot a revision
         # using build vars
-        - rev: {{ salt['elife.cfg']('project.branch', 'master') }}
-        - branch: {{ salt['elife.cfg']('project.branch', 'master') }}
+        # update 2017-10-30: the below aren't working as we expected because the
+        # values for project.branch on --continuumtest, --prod and --end2end 
+        # are 'develop'!
+        #- rev: {{ salt['elife.cfg']('project.branch', 'master') }}
+        #- branch: {{ salt['elife.cfg']('project.branch', 'master') }}
+        - rev: master
+        - branch: master
         - target: /srv/{{ app.name }}
         - force_fetch: True
         - force_checkout: True
