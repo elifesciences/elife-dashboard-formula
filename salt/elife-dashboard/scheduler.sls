@@ -71,6 +71,12 @@ configure-{{ app.name }}:
         - template: jinja
         - require:
             - install-{{ app.name }}
+
+    cmd.run:
+        - cwd: /srv/{{ app.name }}/
+        - name: ./install.sh
+        - require:
+            - file: configure-{{ app.name }}
             - postgres_database: {{ app.name }}-db-exists
 
 configure-{{ app.name }}-log:
@@ -102,11 +108,6 @@ configure-{{ app.name }}-log:
         - require:
             - install-{{ app.name }}
 
-# temporary state. 
-old-uwsgi-{{ app.name }}:
-    file.absent:
-        - name: /etc/init.d/uwsgi-{{ app.name }}
-
 uwsgi-{{ app.name }}:
     file.managed:
         - name: /etc/init/uwsgi-{{ app.name }}.conf
@@ -117,7 +118,7 @@ uwsgi-{{ app.name }}:
     service.running:
         - enable: True
         - require:
-            - file: old-uwsgi-{{ app.name }}
+            - cmd: configure-{{ app.name }}
             - file: uwsgi-params
             - pip: uwsgi-pkg
             - file: uwsgi-app            
@@ -133,10 +134,8 @@ uwsgi-{{ app.name }}:
 publish-articles-cron:
     cron.present:
         - user: {{ pillar.elife.deploy_user.username }}
-        - name: cd /srv/{{ app.name }}/ && ./manage.sh publish_articles
+        - name: cd /srv/{{ app.name }}/ && ./manage.sh --skip-install publish_articles
         - identifier: publish-articles-every-minute
         - minute: '*'
         - require:
-            - file: configure-{{ app.name }}
-        - onlyif:
-            - test -f /srv/{{ app.name }}/manage.sh
+            - cmd: configure-{{ app.name }}
