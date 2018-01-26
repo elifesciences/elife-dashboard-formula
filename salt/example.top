@@ -1,6 +1,7 @@
 base:
     '*':
         - elife
+        - elife.python3
         - elife.postgresql
         - elife.nginx
         - elife.uwsgi
