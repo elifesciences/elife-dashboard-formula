@@ -66,9 +66,6 @@ uwsgi-{{ app.name }}:
         - template: jinja
         - mode: 755
 
-    cmd.run:
-        - name: service uwsgi-{{ app.name }} restart
-
     service.running:
         - enable: True
         - require:
@@ -78,3 +75,6 @@ uwsgi-{{ app.name }}:
             - {{ app.name }}-uwsgi-conf
             - {{ app.name }}-nginx-conf
             - file: app-log-file
+
+    cmd.run:
+        - name: service uwsgi-{{ app.name }} restart
