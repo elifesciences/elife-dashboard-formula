@@ -16,7 +16,7 @@
 configure-{{ app.name }}:
     file.managed:
         - user: {{ user }}
-        - name: /srv/app/app.cfg
+        - name: /srv/elife-dashboard/app.cfg
         - source: salt://elife-dashboard/config/srv-app-dashboard-app.cfg
         - template: jinja
         - watch_in:
