@@ -31,3 +31,22 @@ elife_article_scheduler:
 
     web:
         port: 8080
+
+elife_dashboard_2:
+    name: elife-dashboard-2
+
+    secret_key: "django-secret-key-do-not-use-in-prod"
+
+    db:
+        name: elifemonitoring
+        username: elifemonitoring # case sensitive. use all lower
+        password: elifemonitoring
+        host: 127.0.0.1
+        port: 5432
+
+    basic_auth:
+        username: username
+        password: password
+
+    web:
+        port: 8081
