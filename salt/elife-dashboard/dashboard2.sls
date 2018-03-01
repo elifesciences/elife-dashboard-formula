@@ -50,6 +50,8 @@ configure-{{ app.name }}-log:
         - source: salt://elife-dashboard/config/etc-nginx-sitesenabled-{{ app.name }}.conf
         - require:
             - cmd: create-production-web-user
+        - listen_in:
+            - service: nginx-server-service
 
 {{ app.name }}-uwsgi-conf:
     file.managed:
