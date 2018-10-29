@@ -130,7 +130,7 @@ uwsgi-{{ app.name }}:
         - require:
             - file: old-uwsgi-{{ app.name }}
             - file: uwsgi-params
-            - pip: uwsgi-pkg
+            - uwsgi-pkg
             - file: uwsgi-app            
             - file: app-uwsgi-conf
             - file: app-nginx-conf

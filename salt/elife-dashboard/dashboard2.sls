@@ -72,7 +72,7 @@ uwsgi-{{ app.name }}:
         - enable: True
         - require:
             - file: uwsgi-params
-            - pip: uwsgi-pkg
+            - uwsgi-pkg
             - file: uwsgi-app
             - {{ app.name }}-uwsgi-conf
             - {{ app.name }}-nginx-conf
