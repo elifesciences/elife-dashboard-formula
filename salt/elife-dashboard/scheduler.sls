@@ -8,8 +8,8 @@ install-{{ app.name }}:
         # note: elife-article-scheduler is always deployed as master
         # until it has its own instance, we cannot a revision
         # using build vars
-        - rev: master
-        - branch: master
+        - rev: {{ salt['elife.cfg']('project.branch', 'master') }}
+        - branch: {{ salt['elife.cfg']('project.branch', 'master') }}
         - target: /srv/{{ app.name }}
         - force_fetch: True
         - force_checkout: True
@@ -35,6 +35,15 @@ install-{{ app.name }}:
 #
 # db
 #
+
+# ensure local postgresql is running
+# when an rds instance is detected, the local service is stopped
+# article-scheduler is an exception to that rule
+extend:
+    postgresql:
+        service:
+            - running
+            - enable: True
 
 {{ app.name }}-db-user:
     postgres_user.present:
@@ -98,6 +107,8 @@ configure-{{ app.name }}-log:
         - source: salt://elife-dashboard/config/etc-nginx-sitesenabled-{{ app.name }}.conf
         - require:
             - cmd: create-production-web-user
+        - listen_in:
+            - service: nginx-server-service
 
 {{ app.name }}-uwsgi-conf:
     file.managed:
@@ -124,6 +135,7 @@ uwsgi-{{ app.name }}:
     service.running:
         - enable: True
         - require:
+            - uwsgi-pkg
             - uwsgi-elife-article-scheduler-upstart
             - uwsgi-elife-article-scheduler-systemd
             - {{ app.name }}-uwsgi-conf
@@ -133,6 +145,7 @@ uwsgi-{{ app.name }}:
             - configure-{{ app.name }}-log
         - watch:
             - install-{{ app.name }}
+            # restart uwsgi if nginx service changes
             - service: nginx-server-service
 
 # publish articles every minute

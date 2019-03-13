@@ -1,6 +1,7 @@
 base:
     '*':
         - elife
+        - elife.python3
         - elife.postgresql
         - elife.nginx
         - elife.uwsgi
@@ -9,4 +10,4 @@ base:
         - elife-dashboard
         - elife-dashboard.uwsgi
         - elife-dashboard.scheduler
-        #- elife-dashboard.processes
+        - elife-dashboard.dashboard2

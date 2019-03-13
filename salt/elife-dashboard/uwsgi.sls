@@ -8,6 +8,8 @@ app-nginx-conf:
             {% if pillar.elife.env != 'dev' %}
             - cmd: web-ssl-enabled
             {% endif %}
+        - listen_in:
+            - service: nginx-server-service
 
 {% if salt['elife.cfg']('cfn.outputs.DomainName') %}
 #dashboard-unencrypted-redirect:
