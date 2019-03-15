@@ -141,23 +141,25 @@ uwsgi-elife-article-scheduler-upstart:
         - template: jinja
         - mode: 755
 
-uwsgi-elife-article-scheduler-systemd:
-    file.managed:
-        - name: /lib/systemd/system/uwsgi-{{ app.name }}.service
-        - source: salt://elife-dashboard/config/lib-systemd-system-uwsgi-elife-article-scheduler.service
-        - template: jinja
+uwsgi-{{ app.name }}.socket:
+{% if salt['grains.get']('osrelease') == "14.04" %}
+    cmd.run:
+        - name: echo "dummy state"
+{% else %}
+    service.running:
+        - enable: True
+{% endif %}
 
 uwsgi-{{ app.name }}:
     service.running:
         - enable: True
         - require:
+            - uwsgi-{{ app.name }}.socket
             - uwsgi-pkg
             - uwsgi-elife-article-scheduler-upstart
-            - uwsgi-elife-article-scheduler-systemd
             - {{ app.name }}-uwsgi-conf
             - {{ app.name }}-uwsgi-conf
             - {{ app.name }}-nginx-conf
-            
             - configure-{{ app.name }}-log
         - watch:
             - install-{{ app.name }}

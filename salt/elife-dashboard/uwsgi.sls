@@ -44,9 +44,7 @@ uwsgi-app-upstart:
 uwsgi-elife-dashboard.socket:
     cmd.run:
         - name: echo "dummy state"
-
 {% else %}
-
 uwsgi-elife-dashboard.socket:
     service.running:
         - enable: True
@@ -54,6 +52,9 @@ uwsgi-elife-dashboard.socket:
 
 uwsgi-app:
     service.running:
+        {% if salt['grains.get']('osrelease') != "14.04" %}
+        - name: uwsgi-elife-dashboard
+        {% endif %}
         - enable: True
         - require:
             - uwsgi-elife-dashboard.socket

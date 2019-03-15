@@ -44,4 +44,6 @@ elife:
         services:
             elife-dashboard:
                 folder: /srv/elife-dashboard
+            elife-article-scheduler:
+                folder: /srv/elife-article-scheduler
 
