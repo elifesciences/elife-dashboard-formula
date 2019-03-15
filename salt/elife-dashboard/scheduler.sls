@@ -45,6 +45,19 @@ extend:
             - running
             - enable: True
 
+# copied from builder-base-formula/elife/postgresql.sls as it is not
+# executed there due to RDS being in use
+postgresql-user-article-scheduler-hack:
+    postgres_user.present:
+        - name: {{ pillar.elife.db_root.username }}
+        - password: {{ pillar.elife.db_root.password }}
+        - refresh_password: True
+        - db_host: localhost
+        - db_password: {{ pillar.elife.db_root.password }}
+        # doesn't work on RDS instances
+        - superuser: True
+        - login: True
+
 {{ app.name }}-db-user:
     postgres_user.present:
         - name: {{ app.db.username }}
@@ -52,6 +65,7 @@ extend:
         - password: {{ app.db.password }}
         - refresh_password: True
         
+        - db_host: localhost
         - db_user: {{ pillar.elife.db_root.username }}
         - db_password: {{ pillar.elife.db_root.password }}
         #{% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
@@ -60,11 +74,13 @@ extend:
         #{% endif %}
         - require:
             - service: postgresql
+            - postgresql-user-article-scheduler-hack
 
 {{ app.name }}-db-exists:
     postgres_database.present:
         - name: {{ app.db.name }}
         - owner: {{ app.db.username }}
+        - db_host: localhost
         - db_user: {{ pillar.elife.db_root.username }}
         - db_password: {{ pillar.elife.db_root.password }}
         - require:
