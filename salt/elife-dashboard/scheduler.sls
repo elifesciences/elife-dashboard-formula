@@ -25,7 +25,12 @@ install-{{ app.name }}:
         - require:
             - git: install-{{ app.name }}
 
-
+    cmd.run:
+        - name: ./install.sh
+        - cwd: /srv/{{ app.name }}
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - file: install-{{ app.name }}
 
 #
 # db
