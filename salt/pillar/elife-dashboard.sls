@@ -35,7 +35,7 @@ elife_article_scheduler:
 elife_dashboard_2:
     name: elife-dashboard-2
 
-    preview_base_url = https://foo.test.org
+    preview_base_url: https://foo.test.org
 
     secret_key: "django-secret-key-do-not-use-in-prod"
 
