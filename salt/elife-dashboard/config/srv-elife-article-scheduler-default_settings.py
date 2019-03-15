@@ -11,8 +11,10 @@ PUBLISHING_SERVICE_USER = ''
 PUBLISHING_SERVICE_PASSWORD = ''
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# this is the 'src' directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -36,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'rest_framework_swagger',
     'schedule',
 ]
@@ -81,7 +84,7 @@ DATABASES = {
         'NAME': '{{ app.db.name }}',
         'USER': '{{ app.db.username }}',
         'PASSWORD': '{{ app.db.password }}',
-        
+
         {# "salt['elife.cfg']" logic can be found in the _modules/elife.py module #}
         'HOST': "{{ app.db.host }}",
         'PORT': "{{ app.db.port }}",        

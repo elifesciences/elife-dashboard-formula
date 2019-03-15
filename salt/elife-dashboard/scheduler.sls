@@ -103,6 +103,14 @@ configure-{{ app.name }}:
             - install-{{ app.name }}
             - postgres_database: {{ app.name }}-db-exists
 
+    # command collects css/js/fonts/etc in to a single place
+    cmd.run:
+        - cwd: /srv/{{ app.name }}/
+        - name: ./manage.sh collectstatic --noinput
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - file: configure-{{ app.name }}
+
 configure-{{ app.name }}-log:
     file.managed:
         - name: /srv/{{ app.name }}/src/elife-article-scheduler.log
