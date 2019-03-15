@@ -1,3 +1,6 @@
+# 2019-03-15, note: this was an attempt to make the installation and configuration of python web apps more generic with 
+# an eye to replacing their formula with a single universal one managed 
+
 {% set app = pillar.elife_dashboard %}
 {% set user = pillar.elife.deploy_user.username %}
 {% set webuser = pillar.elife.webserver.username %}

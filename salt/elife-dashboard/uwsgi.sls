@@ -40,21 +40,28 @@ uwsgi-app-upstart:
         - source: salt://elife-dashboard/config/etc-init-uwsgi-app.conf
         - mode: 755
 
-uwsgi-app-systemd:
-    file.managed:
-        - name: /lib/systemd/system/uwsgi-app.service
-        - source: salt://elife-dashboard/config/lib-systemd-system-uwsgi-app.service
+{% if salt['grains.get']('osrelease') == "14.04" %}
+uwsgi-elife-dashboard.socket:
+    cmd.run:
+        - name: echo "dummy state"
+
+{% else %}
+
+uwsgi-elife-dashboard.socket:
+    service.running:
+        - enable: True
+{% endif %}
 
 uwsgi-app:
     service.running:
         - enable: True
         - require:
+            - uwsgi-elife-dashboard.socket
             - uwsgi-app-upstart
-            - uwsgi-app-systemd
-            - file: uwsgi-params
-            - file: app-uwsgi-conf
-            - file: app-nginx-conf
-            - file: app-log-file
+            - uwsgi-params
+            - app-uwsgi-conf
+            - app-nginx-conf
+            - app-log-file
         - watch:
             - install-elife-dashboard
             # restart uwsgi if nginx service changes 
