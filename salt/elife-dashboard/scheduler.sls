@@ -6,10 +6,15 @@ install-{{ app.name }}:
         - name: ssh://git@github.com/elifesciences/{{ app.name }}
         - identity: {{ pillar.elife.projects_builder.key or '' }}
         # note: elife-article-scheduler is always deployed as master
-        # until it has its own instance, we cannot a revision
-        # using build vars
-        - rev: {{ salt['elife.cfg']('project.branch', 'master') }}
-        - branch: {{ salt['elife.cfg']('project.branch', 'master') }}
+        # lsh 2019-03-18: lets not muck about here
+        # build vars 'branch' is pinned at 'develop'. 
+        # development is happening in master
+        # article-scheduler has no pinned version support whatsoever
+        # using build vars:
+        #- rev: {{ salt['elife.cfg']('project.branch', 'master') }}
+        #- branch: {{ salt['elife.cfg']('project.branch', 'master') }}
+        - rev: master
+        - branch: master
         - target: /srv/{{ app.name }}
         - force_fetch: True
         - force_checkout: True
@@ -26,11 +31,11 @@ install-{{ app.name }}:
             - git: install-{{ app.name }}
 
     cmd.run:
-        - cwd: /srv/{{ app.name }}
         - name: ./install.sh
+        - cwd: /srv/{{ app.name }}
+        - user: {{ pillar.elife.deploy_user.username }}
         - require:
             - file: install-{{ app.name }}
-
 
 #
 # db
