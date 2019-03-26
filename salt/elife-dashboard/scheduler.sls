@@ -146,8 +146,8 @@ alt-ubr-config:
 
 # 11:15pm every day
 {{ app.name }}-daily-backups:
-    # only backup prod, adhoc and continuumtest instances
-    {% if pillar.elife.env in ['dev', 'ci', 'end2end'] %}
+    # only backup prod, end2end, adhoc and continuumtest instances
+    {% if pillar.elife.env in ['dev', 'ci'] %}
     cron.absent:
     {% else %}
     cron.present:
