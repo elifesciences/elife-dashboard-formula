@@ -154,7 +154,7 @@ elife-article-scheduler-ubr-config:
     {% endif %}
         - user: root
         - identifier: daily-{{ app.name }}-backups
-        - name: UBR_CFG_FILE=elife-article-scheduler-app.cfg cd /opt/ubr/ && ./ubr.sh >> /var/log/ubr-cron.log
+        - name: cd /opt/ubr/ && UBR_CFG_FILE=elife-article-scheduler-app.cfg ./ubr.sh >> /var/log/ubr-cron.log
         - minute: 15 # original in builder-base/backup-cron.sls is '0'
         - hour: 23
         - require:
