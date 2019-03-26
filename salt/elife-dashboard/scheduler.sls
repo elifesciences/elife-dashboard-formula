@@ -132,10 +132,10 @@ ubr-{{ app.name }}-db-backup:
             - {{ app.name }}-db-exists
 
 # separate UBR config living alongside regular config
-alt-ubr-config:
+elife-article-scheduler-ubr-config:
     file.managed:
-        - name: /opt/ubr/alt-app.cfg
-        - source: salt://elife-dashboard/config/opt-ubr-alt-app.cfg
+        - name: /opt/ubr/elife-article-scheduler-app.cfg
+        - source: salt://elife-dashboard/config/opt-ubr-elife-article-scheduler-app.cfg
         - template: jinja
         # read-write for root only
         - user: root
@@ -154,7 +154,7 @@ alt-ubr-config:
     {% endif %}
         - user: root
         - identifier: daily-{{ app.name }}-backups
-        - name: UBR_CFG_FILE=alt-app.cfg cd /opt/ubr/ && ./ubr.sh >> /var/log/ubr-cron.log
+        - name: UBR_CFG_FILE=elife-article-scheduler-app.cfg cd /opt/ubr/ && ./ubr.sh >> /var/log/ubr-cron.log
         - minute: 15 # original in builder-base/backup-cron.sls is '0'
         - hour: 23
         - require:
