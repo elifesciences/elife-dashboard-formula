@@ -1,0 +1,2 @@
+postgresql-database:
+    - {{ pillar.elife_article_scheduler.db.name }}

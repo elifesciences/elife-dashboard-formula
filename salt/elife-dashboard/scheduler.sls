@@ -126,6 +126,49 @@ configure-{{ app.name }}-log:
             - file: configure-{{ app.name }}
 
 #
+# backup
+# bit of a hack for article-scheduler
+
+# separate descriptor living in different config directory so it doesn't conflict with elife-dashboard ubr config
+ubr-{{ app.name }}-db-backup:
+    file.managed:
+        - name: /etc/ubr2/elife-article-scheduler-backup.yaml
+        - source: salt://elife-dashboard/config/etc-ubr2-elife-article-scheduler-backup.yaml
+        - makedirs: true
+        - template: jinja
+        - require:
+            - {{ app.name }}-db-exists
+
+# separate UBR config living alongside regular config
+elife-article-scheduler-ubr-config:
+    file.managed:
+        - name: /opt/ubr/elife-article-scheduler-app.cfg
+        - source: salt://elife-dashboard/config/opt-ubr-elife-article-scheduler-app.cfg
+        - template: jinja
+        # read-write for root only
+        - user: root
+        - group: root
+        - mode: 600
+        - require:
+            - install-ubr
+
+# 11:15pm every day
+{{ app.name }}-daily-backups:
+    # only backup prod, end2end, adhoc and continuumtest instances
+    {% if pillar.elife.env in ['dev', 'ci'] %}
+    cron.absent:
+    {% else %}
+    cron.present:
+    {% endif %}
+        - user: root
+        - identifier: daily-{{ app.name }}-backups
+        - name: cd /opt/ubr/ && UBR_CFG_FILE=elife-article-scheduler-app.cfg ./ubr.sh >> /var/log/ubr-cron.log
+        - minute: 15 # original in builder-base/backup-cron.sls is '0'
+        - hour: 23
+        - require:
+            - install-ubr
+
+#
 # webserver
 #
 
