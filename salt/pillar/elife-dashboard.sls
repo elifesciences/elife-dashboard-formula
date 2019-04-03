@@ -46,4 +46,5 @@ elife:
                 folder: /srv/elife-dashboard
             elife-article-scheduler:
                 folder: /srv/elife-article-scheduler
+                disable_newrelic: True
 
