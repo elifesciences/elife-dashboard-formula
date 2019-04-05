@@ -49,6 +49,8 @@ configure-{{ app.name }}:
             - salt://elife-dashboard/config/srv-app-dashboard-{{ pillar.elife.env }}_settings.py
             - salt://elife-dashboard/config/srv-app-dashboard-default_settings.py
         - template: jinja
+        - require:
+            - install-{{ app.name }}
         - watch_in:
             - service: uwsgi-app
 
@@ -163,6 +165,7 @@ load-db-schema:
         - unless:
             - test -f /root/db-created.flag
         - require:
+            - install-{{ app.name }}
             - postgres_database: app-db-exists
 
 db-perms-to-rds_superuser:
@@ -193,14 +196,15 @@ app-done:
     cmd.run: 
         - name: echo "app is done installing"
         - require:
-            - cmd: load-db-schema
-            - cmd: configure-{{ app.name }}
-            - cmd: npm-install
+            - load-db-schema
+            - configure-{{ app.name }}
+            - npm-install
 
 #
 # process queue
 #
 
+# TODO: this is an upstart service. how does it relate to daemons.conf in processes.sls
 {{ app.name }}-process-queue-daemon:
     file.managed:
         - name: /etc/init/{{ app.name }}-process-queue-daemon.conf
