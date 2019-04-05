@@ -2,12 +2,8 @@
 {% set dash = pillar.elife_dashboard %}
 {% set user = pillar.elife.deploy_user.username %}
 
-
-#
-# db
-#
-
-
+# dashboard2 is completely disabled in 16.04+
+{% if salt['grains.get']('osrelease') == '14.04' %}
 
 #
 # configure
@@ -68,8 +64,9 @@ uwsgi-{{ app.name }}:
         - template: jinja
         - mode: 755
 
-    service.running:
-        - enable: True
+    # stop the service if it's running
+    service.dead:
+        - enable: False
         - require:
             - file: uwsgi-params
             - uwsgi-pkg
@@ -78,5 +75,7 @@ uwsgi-{{ app.name }}:
             - {{ app.name }}-nginx-conf
             - file: app-log-file
 
-    cmd.run:
-        - name: service uwsgi-{{ app.name }} restart
+    #cmd.run:
+    #    - name: service uwsgi-{{ app.name }} restart
+
+{% endif %}
