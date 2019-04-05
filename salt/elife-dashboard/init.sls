@@ -5,7 +5,7 @@
 {% set user = pillar.elife.deploy_user.username %}
 {% set webuser = pillar.elife.webserver.username %}
 
-install-{{ app.name }}:
+install-elife-dashboard:
     builder.git_latest:
         - name: git@github.com:elifesciences/elife-dashboard.git
         - identity: {{ pillar.elife.projects_builder.key or '' }}
@@ -33,24 +33,26 @@ npm-install:
             - install-elife-dashboard
             - nodejs
 
-
+# deprecated, don't use outside of legacy instances
+{% if salt['grains.get']('osrelease') == "14.04" %}
 app-link:
     cmd.run:
         - cwd: /srv/
         - name: ln -sfT elife-dashboard app
         - require:
             - install-elife-dashboard
+{% endif %}
 
-configure-{{ app.name }}:
+configure-elife-dashboard:
     file.managed:
         - user: {{ user }}
-        - name: /srv/app/settings.py
+        - name: /srv/elife-dashboard/settings.py
         - source:
             - salt://elife-dashboard/config/srv-app-dashboard-{{ pillar.elife.env }}_settings.py
             - salt://elife-dashboard/config/srv-app-dashboard-default_settings.py
         - template: jinja
         - require:
-            - install-{{ app.name }}
+            - install-elife-dashboard
         - watch_in:
             - service: uwsgi-app
 
@@ -59,7 +61,7 @@ configure-{{ app.name }}:
         - cwd: /srv/elife-dashboard/
         - name: ./install.sh
         - require:
-            - file: configure-{{ app.name }}
+            - file: configure-elife-dashboard
             - install-elife-dashboard
 
 #
@@ -165,7 +167,7 @@ load-db-schema:
         - unless:
             - test -f /root/db-created.flag
         - require:
-            - install-{{ app.name }}
+            - install-elife-dashboard
             - postgres_database: app-db-exists
 
 db-perms-to-rds_superuser:
@@ -197,7 +199,7 @@ app-done:
         - name: echo "app is done installing"
         - require:
             - load-db-schema
-            - configure-{{ app.name }}
+            - configure-elife-dashboard
             - npm-install
 
 #
@@ -205,9 +207,9 @@ app-done:
 #
 
 # TODO: this is an upstart service. how does it relate to daemons.conf in processes.sls
-{{ app.name }}-process-queue-daemon:
+elife-dashboard-process-queue-daemon:
     file.managed:
-        - name: /etc/init/{{ app.name }}-process-queue-daemon.conf
+        - name: /etc/init/elife-dashboard-process-queue-daemon.conf
         - source: salt://elife-dashboard/config/etc-init-elife-dashboard-process-queue-daemon.conf
         - template: jinja
         - require:

@@ -28,7 +28,7 @@ dashboard-unencrypted-redirect:
 
 app-uwsgi-conf:
     file.managed:
-        - name: /srv/app/uwsgi.ini
+        - name: /srv/elife-dashboard/uwsgi.ini
         - source: salt://elife-dashboard/config/srv-elife-dashboard-uwsgi.ini
         - template: jinja
         - require:
