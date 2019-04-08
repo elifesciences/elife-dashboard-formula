@@ -34,7 +34,7 @@ old-uwsgi-app:
 
 uwsgi-elife-dashboard:
     file.managed:
-        - name: /etc/init/uwsgi-app.conf
+        - name: /etc/init/uwsgi-elife-dashboard.conf
         - source: salt://elife-dashboard/config/etc-init-uwsgi-elife-dashboard.conf
         - mode: 755
 
