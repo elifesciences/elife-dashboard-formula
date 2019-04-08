@@ -20,7 +20,7 @@ configure-{{ app.name }}:
         - source: salt://elife-dashboard/config/srv-app-dashboard-app.cfg
         - template: jinja
         - watch_in:
-            - service: uwsgi-app
+            - service: uwsgi-elife-dashboard
 
     cmd.run:
         - user: {{ user }}
@@ -73,7 +73,6 @@ uwsgi-{{ app.name }}:
         - require:
             - file: uwsgi-params
             - uwsgi-pkg
-            - file: uwsgi-app
             - {{ app.name }}-uwsgi-conf
             - {{ app.name }}-nginx-conf
             - file: app-log-file

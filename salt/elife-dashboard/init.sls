@@ -47,7 +47,7 @@ configure-{{ app.name }}:
             - salt://elife-dashboard/config/srv-app-dashboard-default_settings.py
         - template: jinja
         - watch_in:
-            - service: uwsgi-app
+            - service: uwsgi-elife-dashboard
 
     cmd.run:
         - user: {{ user }}
