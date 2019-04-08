@@ -197,20 +197,17 @@ uwsgi-elife-article-scheduler-upstart:
         - template: jinja
         - mode: 755
 
+{% if salt['grains.get']('osrelease') != "14.04" %}
 uwsgi-{{ app.name }}.socket:
-{% if salt['grains.get']('osrelease') == "14.04" %}
-    cmd.run:
-        - name: echo "dummy state"
-{% else %}
     service.running:
         - enable: True
+        - require_in: uwsgi-{{ app.name }}
 {% endif %}
 
 uwsgi-{{ app.name }}:
     service.running:
         - enable: True
         - require:
-            - uwsgi-{{ app.name }}.socket
             - uwsgi-pkg
             - uwsgi-elife-article-scheduler-upstart
             - {{ app.name }}-uwsgi-conf

@@ -54,7 +54,7 @@ configure-elife-dashboard:
         - require:
             - install-elife-dashboard
         - watch_in:
-            - service: uwsgi-app
+            - service: uwsgi-elife-dashboard
 
     cmd.run:
         - user: {{ user }}

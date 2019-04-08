@@ -36,8 +36,8 @@ app-uwsgi-conf:
 
 uwsgi-app-upstart:
     file.managed:
-        - name: /etc/init/uwsgi-app.conf
-        - source: salt://elife-dashboard/config/etc-init-uwsgi-app.conf
+        - name: /etc/init/uwsgi-elife-dashboard.conf
+        - source: salt://elife-dashboard/config/etc-init-uwsgi-elife-dashboard.conf
         - mode: 755
 
 {% if salt['grains.get']('osrelease') != "14.04" %}
@@ -48,11 +48,8 @@ uwsgi-elife-dashboard.socket:
             - uwsgi-app
 {% endif %}
 
-uwsgi-app:
+uwsgi-elife-dashboard:
     service.running:
-        {% if salt['grains.get']('osrelease') != "14.04" %}
-        - name: uwsgi-elife-dashboard # newrelic is expecting 'uwsgi-app' (urgh)
-        {% endif %}
         - enable: True
         - require:
             - uwsgi-app-upstart
