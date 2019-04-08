@@ -200,7 +200,6 @@ uwsgi-{{ app.name }}:
             - file: old-uwsgi-{{ app.name }}
             - file: uwsgi-params
             - uwsgi-pkg
-            - file: uwsgi-app            
             - file: app-uwsgi-conf
             - file: app-nginx-conf
             - file: app-log-file

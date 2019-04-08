@@ -32,10 +32,10 @@ old-uwsgi-app:
     file.absent:
         - name: /etc/init.d/uwsgi-app
 
-uwsgi-app:
+uwsgi-elife-dashboard:
     file.managed:
-        - name: /etc/init/uwsgi-app.conf
-        - source: salt://elife-dashboard/config/etc-init-uwsgi-app.conf
+        - name: /etc/init/uwsgi-elife-dashboard.conf
+        - source: salt://elife-dashboard/config/etc-init-uwsgi-elife-dashboard.conf
         - mode: 755
 
     service.running:
@@ -43,7 +43,7 @@ uwsgi-app:
         - require:
             - file: uwsgi-params
             - uwsgi-pkg
-            - file: uwsgi-app
+            - file: uwsgi-elife-dashboard
             - file: app-uwsgi-conf
             - file: app-nginx-conf
             - file: app-log-file
