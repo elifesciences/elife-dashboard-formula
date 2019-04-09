@@ -1,0 +1,10 @@
+[Unit]
+Description="elife-dashboard-process-queue-daemons (many)"
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Restart=on-failure
+ExecStart=/opt/elife-dashboard-process-queue-daemons.sh

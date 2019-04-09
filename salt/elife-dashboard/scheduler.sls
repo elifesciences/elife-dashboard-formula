@@ -108,6 +108,14 @@ configure-{{ app.name }}:
             - install-{{ app.name }}
             - postgres_database: {{ app.name }}-db-exists
 
+    # command collects css/js/fonts/etc in to a single place
+    cmd.run:
+        - cwd: /srv/{{ app.name }}/
+        - name: ./manage.sh collectstatic --noinput
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - file: configure-{{ app.name }}
+
 configure-{{ app.name }}-log:
     file.managed:
         - name: /srv/{{ app.name }}/src/elife-article-scheduler.log
@@ -182,27 +190,30 @@ elife-article-scheduler-ubr-config:
         - require:
             - install-{{ app.name }}
 
-# temporary state. 
-old-uwsgi-{{ app.name }}:
-    file.absent:
-        - name: /etc/init.d/uwsgi-{{ app.name }}
-
-uwsgi-{{ app.name }}:
+uwsgi-elife-article-scheduler-upstart:
     file.managed:
         - name: /etc/init/uwsgi-{{ app.name }}.conf
         - source: salt://elife-dashboard/config/etc-init-uwsgi-elife-article-scheduler.conf
         - template: jinja
         - mode: 755
 
+{% if salt['grains.get']('osrelease') != "14.04" %}
+uwsgi-{{ app.name }}.socket:
+    service.running:
+        - enable: True
+        - require_in: uwsgi-{{ app.name }}
+{% endif %}
+
+uwsgi-{{ app.name }}:
     service.running:
         - enable: True
         - require:
-            - file: old-uwsgi-{{ app.name }}
-            - file: uwsgi-params
             - uwsgi-pkg
-            - file: app-uwsgi-conf
-            - file: app-nginx-conf
-            - file: app-log-file
+            - uwsgi-elife-article-scheduler-upstart
+            - {{ app.name }}-uwsgi-conf
+            - {{ app.name }}-uwsgi-conf
+            - {{ app.name }}-nginx-conf
+            - configure-{{ app.name }}-log
         - watch:
             - install-{{ app.name }}
             # restart uwsgi if nginx service changes
@@ -217,5 +228,3 @@ publish-articles-cron:
         - minute: '*'
         - require:
             - file: configure-{{ app.name }}
-        - onlyif:
-            - test -f /srv/{{ app.name }}/manage.sh

@@ -12,41 +12,51 @@ app-nginx-conf:
             - service: nginx-server-service
 
 {% if salt['elife.cfg']('cfn.outputs.DomainName') %}
+#dashboard-unencrypted-redirect:
+#    file.symlink:
+#        - name: /etc/nginx/sites-enabled/unencrypted-redirect.conf
+#        - target: /etc/nginx/sites-available/unencrypted-redirect.conf
+#        - require:
+#            - app-nginx-conf
+
+# we use HSTS for the redirection
+# we typically have port 80 closed externally and allow unencrypted internally
 dashboard-unencrypted-redirect:
-    file.symlink:
+    file.absent:
         - name: /etc/nginx/sites-enabled/unencrypted-redirect.conf
-        - target: /etc/nginx/sites-available/unencrypted-redirect.conf
-        - require:
-            - app-nginx-conf
 {% endif %}
 
 app-uwsgi-conf:
     file.managed:
-        - name: /srv/app/uwsgi.ini
+        - name: /srv/elife-dashboard/uwsgi.ini
         - source: salt://elife-dashboard/config/srv-elife-dashboard-uwsgi.ini
         - template: jinja
         - require:
             - install-elife-dashboard
 
-old-uwsgi-app:
-    file.absent:
-        - name: /etc/init.d/uwsgi-app
-
-uwsgi-elife-dashboard:
+uwsgi-app-upstart:
     file.managed:
         - name: /etc/init/uwsgi-elife-dashboard.conf
         - source: salt://elife-dashboard/config/etc-init-uwsgi-elife-dashboard.conf
         - mode: 755
 
+{% if salt['grains.get']('osrelease') != "14.04" %}
+uwsgi-elife-dashboard.socket:
+    service.running:
+        - enable: True
+        - require_in:
+            - uwsgi-app
+{% endif %}
+
+uwsgi-elife-dashboard:
     service.running:
         - enable: True
         - require:
-            - file: uwsgi-params
-            - uwsgi-pkg
-            - file: uwsgi-elife-dashboard
-            - file: app-uwsgi-conf
-            - file: app-nginx-conf
-            - file: app-log-file
+            - uwsgi-app-upstart
+            - uwsgi-params
+            - app-uwsgi-conf
+            - app-nginx-conf
+            - app-log-file
         - watch:
             - install-elife-dashboard
             # restart uwsgi if nginx service changes 
