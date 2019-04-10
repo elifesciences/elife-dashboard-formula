@@ -36,6 +36,7 @@ elife-dashboard-process-queue-daemons-start:
         - name: /opt/{{ controller }}.sh
         - source: salt://elife/templates/systemd-multiple-processes.sh
         - template: jinja
+        - mode: 755
         - context:
             process: {{ pname }}
             number: 5

@@ -7,7 +7,7 @@ WantedBy=multi-user.target
 
 [Service]
 Restart=on-failure
-RestartStopSec=10
+RestartSec=10
 User={{ pillar.elife.deploy_user.username }}
 WorkingDirectory=/srv/elife-dashboard/
-ExecStart /bin/bash ./process_dashboard_queue.sh %I
+ExecStart=/bin/bash ./process_dashboard_queue.sh %I
