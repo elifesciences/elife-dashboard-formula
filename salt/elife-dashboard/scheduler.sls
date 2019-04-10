@@ -85,6 +85,7 @@ postgresql-user-article-scheduler-hack:
     postgres_database.present:
         - name: {{ app.db.name }}
         - owner: {{ app.db.username }}
+        - owner_recurse: true
         - db_host: localhost
         - db_user: {{ pillar.elife.db_root.username }}
         - db_password: {{ pillar.elife.db_root.password }}
