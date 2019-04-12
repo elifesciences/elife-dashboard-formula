@@ -49,6 +49,7 @@ elife-dashboard-process-queue-daemons-start:
 
     service.running:
         - name: {{ controller }}
+        - enable: True
         - require:
             - {{ controller }}-script
             - {{ pname }}-service-template
