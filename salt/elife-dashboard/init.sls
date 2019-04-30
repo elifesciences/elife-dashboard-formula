@@ -205,5 +205,3 @@ elife-dashboard-process-queue-daemon:
         - template: jinja
         - require:
             - cmd: app-done
-        - watch:
-            - aws-credentials
