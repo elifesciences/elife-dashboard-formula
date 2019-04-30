@@ -1,25 +1,3 @@
-{% if salt['grains.get']('oscodename') == 'trusty' %}
-elife-dashboard-process-queue-daemons-task:
-    file.managed:
-        - name: /etc/init/elife-dashboard-process-queue-daemons.conf
-        - source: salt://elife/config/etc-init-multiple-processes.conf
-        - template: jinja
-        - context:
-            process: elife-dashboard-process-queue-daemon
-            number: 5
-        - require:
-            - file: elife-dashboard-process-queue-daemon
-
-elife-dashboard-process-queue-daemons-start:
-    cmd.run:
-        - name: start elife-dashboard-process-queue-daemons
-        - require:
-            - file: elife-dashboard-process-queue-daemons-task
-        - watch:
-            - install-elife-dashboard
-
-{% else %}
-
 {% set pname = "elife-dashboard-process-queue-daemon" %}
 {% set controller = "elife-dashboard-process-queue-daemons" %}
 
@@ -56,5 +34,4 @@ elife-dashboard-process-queue-daemons-start:
             - file: {{ controller }}-service
         - watch:
             - install-elife-dashboard
-
-{% endif %}
+            - aws-credentials
