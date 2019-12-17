@@ -1,7 +1,6 @@
 base:
     '*':
         - elife
-        - elife.python3
         - elife.postgresql-11
         - elife.nginx
         - elife.newrelic-python
