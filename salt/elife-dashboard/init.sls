@@ -28,7 +28,7 @@ npm-install:
     cmd.run:
         - name: npm install
         - cwd: /srv/elife-dashboard
-        - user: {{ user }}
+        - runas: {{ user }}
         - require:
             - install-elife-dashboard
             - nodejs
@@ -47,7 +47,7 @@ configure-elife-dashboard:
             - service: uwsgi-elife-dashboard
 
     cmd.run:
-        - user: {{ user }}
+        - runas: {{ user }}
         - cwd: /srv/elife-dashboard/
         - name: ./install.sh
         - require:
