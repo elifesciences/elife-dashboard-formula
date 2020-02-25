@@ -51,6 +51,7 @@ configure-elife-dashboard:
         - cwd: /srv/elife-dashboard/
         - name: ./install.sh
         - require:
+            - uwsgi-pkg # builder-base.uwsgi , gcc is required to install uwsgi via pip
             - file: configure-elife-dashboard
             - install-elife-dashboard
 
