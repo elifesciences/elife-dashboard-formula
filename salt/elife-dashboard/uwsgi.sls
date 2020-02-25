@@ -5,6 +5,7 @@ app-nginx-conf:
         - source: salt://elife-dashboard/config/etc-nginx-sitesenabled-app.conf
         - require:
             - cmd: create-production-web-user
+            - uwsgi-params # builder-base.uwsgi-params
             {% if pillar.elife.env != 'dev' %}
             - cmd: web-ssl-enabled
             {% endif %}
@@ -40,13 +41,11 @@ uwsgi-app-upstart:
         - source: salt://elife-dashboard/config/etc-init-uwsgi-elife-dashboard.conf
         - mode: 755
 
-{% if salt['grains.get']('osrelease') != "14.04" %}
 uwsgi-elife-dashboard.socket:
     service.running:
         - enable: True
         - require_in:
             - uwsgi-app
-{% endif %}
 
 uwsgi-elife-dashboard:
     service.running:

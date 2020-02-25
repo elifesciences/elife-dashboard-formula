@@ -28,7 +28,7 @@ npm-install:
     cmd.run:
         - name: npm install
         - cwd: /srv/elife-dashboard
-        - user: {{ user }}
+        - runas: {{ user }}
         - require:
             - install-elife-dashboard
             - nodejs
@@ -47,10 +47,11 @@ configure-elife-dashboard:
             - service: uwsgi-elife-dashboard
 
     cmd.run:
-        - user: {{ user }}
+        - runas: {{ user }}
         - cwd: /srv/elife-dashboard/
         - name: ./install.sh
         - require:
+            - uwsgi-pkg # builder-base.uwsgi , gcc is required to install uwsgi via pip
             - file: configure-elife-dashboard
             - install-elife-dashboard
 

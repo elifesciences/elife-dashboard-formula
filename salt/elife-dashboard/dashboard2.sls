@@ -23,7 +23,7 @@ configure-{{ app.name }}:
             - service: uwsgi-elife-dashboard
 
     cmd.run:
-        - user: {{ user }}
+        - runas: {{ user }}
         - cwd: /srv/elife-dashboard/dashboard_2
         - name: ./install.sh
         - require:

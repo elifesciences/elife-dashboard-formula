@@ -33,7 +33,7 @@ install-{{ app.name }}:
     cmd.run:
         - name: ./install.sh
         - cwd: /srv/{{ app.name }}
-        - user: {{ pillar.elife.deploy_user.username }}
+        - runas: {{ pillar.elife.deploy_user.username }}
         - require:
             - file: install-{{ app.name }}
 
@@ -114,7 +114,7 @@ configure-{{ app.name }}:
     cmd.run:
         - cwd: /srv/{{ app.name }}/
         - name: ./manage.sh collectstatic --noinput
-        - user: {{ pillar.elife.deploy_user.username }}
+        - runas: {{ pillar.elife.deploy_user.username }}
         - require:
             - file: configure-{{ app.name }}
 
