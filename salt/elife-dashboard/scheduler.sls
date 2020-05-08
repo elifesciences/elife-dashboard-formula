@@ -192,26 +192,16 @@ elife-article-scheduler-ubr-config:
         - require:
             - install-{{ app.name }}
 
-uwsgi-elife-article-scheduler-upstart:
-    file.managed:
-        - name: /etc/init/uwsgi-{{ app.name }}.conf
-        - source: salt://elife-dashboard/config/etc-init-uwsgi-elife-article-scheduler.conf
-        - template: jinja
-        - mode: 755
-
-{% if salt['grains.get']('osrelease') != "14.04" %}
 uwsgi-{{ app.name }}.socket:
     service.running:
         - enable: True
         - require_in: uwsgi-{{ app.name }}
-{% endif %}
 
 uwsgi-{{ app.name }}:
     service.running:
         - enable: True
         - require:
             - uwsgi-pkg
-            - uwsgi-elife-article-scheduler-upstart
             - {{ app.name }}-uwsgi-conf
             - {{ app.name }}-uwsgi-conf
             - {{ app.name }}-nginx-conf

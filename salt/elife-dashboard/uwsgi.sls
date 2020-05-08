@@ -13,13 +13,6 @@ app-nginx-conf:
             - service: nginx-server-service
 
 {% if salt['elife.cfg']('cfn.outputs.DomainName') %}
-#dashboard-unencrypted-redirect:
-#    file.symlink:
-#        - name: /etc/nginx/sites-enabled/unencrypted-redirect.conf
-#        - target: /etc/nginx/sites-available/unencrypted-redirect.conf
-#        - require:
-#            - app-nginx-conf
-
 # we use HSTS for the redirection
 # we typically have port 80 closed externally and allow unencrypted internally
 dashboard-unencrypted-redirect:
@@ -35,12 +28,6 @@ app-uwsgi-conf:
         - require:
             - install-elife-dashboard
 
-uwsgi-app-upstart:
-    file.managed:
-        - name: /etc/init/uwsgi-elife-dashboard.conf
-        - source: salt://elife-dashboard/config/etc-init-uwsgi-elife-dashboard.conf
-        - mode: 755
-
 uwsgi-elife-dashboard.socket:
     service.running:
         - enable: True
@@ -51,7 +38,6 @@ uwsgi-elife-dashboard:
     service.running:
         - enable: True
         - require:
-            - uwsgi-app-upstart
             - uwsgi-params
             - app-uwsgi-conf
             - app-nginx-conf
