@@ -193,16 +193,3 @@ app-done:
             - configure-elife-dashboard
             - npm-install
 
-#
-# process queue
-#
-
-# TODO: this is an upstart service. how does it relate to daemons.conf in processes.sls
-elife-dashboard-process-queue-daemon:
-    file.managed:
-        # see: /srv/elife-dashboard/process_dashboard_queue.sh
-        - name: /etc/init/elife-dashboard-process-queue-daemon.conf
-        - source: salt://elife-dashboard/config/etc-init-elife-dashboard-process-queue-daemon.conf
-        - template: jinja
-        - require:
-            - cmd: app-done
