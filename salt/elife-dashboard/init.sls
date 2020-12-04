@@ -32,6 +32,10 @@ npm-install:
         - require:
             - install-elife-dashboard
             - nodejs
+        # only run if `builder.git_latest of install-elife-dashboard` made changes
+        # 2020-12-04: added to stop the occasional 'npm install' command from failing
+        - onlyif:
+            - builder: install-elife-dashboard
 
 configure-elife-dashboard:
     file.managed:
