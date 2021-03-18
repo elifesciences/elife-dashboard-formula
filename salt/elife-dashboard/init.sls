@@ -185,6 +185,18 @@ ubr-app-db-backup:
             - load-db-schema
 
 #
+# testing
+#
+
+{% if pillar.elife.env in ["dev", "ci", "end2end"] %}
+# lsh@2021-03-18: the headless browser installed by npm for the JS tests is no longer maintained or incompatible or
+# something. Remove when JS can run its tests headless/is less fubar.
+chromium:
+    pkg.installed:
+        - name: chromium-browser
+{% endif %}
+
+#
 #
 #
 
