@@ -60,6 +60,7 @@ configure-elife-dashboard:
             - install-elife-dashboard
             # lsh@2021-03-18: install.sh now calls out to npm
             - nodejs6
+            - npm-install
 
 #
 # auth
