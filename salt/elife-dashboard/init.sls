@@ -58,6 +58,8 @@ configure-elife-dashboard:
             - uwsgi-pkg # builder-base.uwsgi , gcc is required to install uwsgi via pip
             - file: configure-elife-dashboard
             - install-elife-dashboard
+            # lsh@2021-03-18: install.sh now calls out to npm
+            - nodejs6
 
 #
 # auth
