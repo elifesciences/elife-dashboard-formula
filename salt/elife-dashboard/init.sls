@@ -32,6 +32,10 @@ npm-install:
         - require:
             - install-elife-dashboard
             - nodejs
+        # only run if `builder.git_latest of install-elife-dashboard` made changes
+        # 2020-12-04: added to stop the occasional 'npm install' command from failing
+        - onlyif:
+            - builder: install-elife-dashboard
 
 configure-elife-dashboard:
     file.managed:
@@ -54,6 +58,9 @@ configure-elife-dashboard:
             - uwsgi-pkg # builder-base.uwsgi , gcc is required to install uwsgi via pip
             - file: configure-elife-dashboard
             - install-elife-dashboard
+            # lsh@2021-03-18: install.sh now calls out to npm
+            - nodejs6
+            - npm-install
 
 #
 # auth
@@ -179,6 +186,18 @@ ubr-app-db-backup:
         - template: jinja
         - require:
             - load-db-schema
+
+#
+# testing
+#
+
+{% if pillar.elife.env in ["dev", "ci", "end2end"] %}
+# lsh@2021-03-18: the headless browser installed by npm for the JS tests is no longer maintained or incompatible or
+# something. Remove when JS can run its tests headless/is less fubar.
+chromium:
+    pkg.installed:
+        - name: chromium-browser
+{% endif %}
 
 #
 #
