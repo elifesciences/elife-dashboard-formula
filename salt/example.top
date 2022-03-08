@@ -1,12 +1,17 @@
+{% set osrelease = salt['grains.get']('osrelease') %}
 base:
     '*':
         - elife
+        {% if osrelease == "18.04" %}
+        - elife.nodejs6
         - elife.postgresql-11
+        {% else %}
+        - elife.nodejs
+        - elife.postgresql
+        {% endif %}
         - elife.nginx
         - elife.newrelic-python
         - elife.uwsgi
-        - elife.no-more-daemon
-        - elife.nodejs6
         - elife-dashboard
         - elife-dashboard.uwsgi
         - elife-dashboard.scheduler

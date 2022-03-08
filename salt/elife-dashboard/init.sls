@@ -4,6 +4,7 @@
 {% set app = pillar.elife_dashboard %}
 {% set user = pillar.elife.deploy_user.username %}
 {% set webuser = pillar.elife.webserver.username %}
+{% set osrelease = salt['grains.get']('oscodename') %}
 
 install-elife-dashboard:
     builder.git_latest:
@@ -59,7 +60,11 @@ configure-elife-dashboard:
             - file: configure-elife-dashboard
             - install-elife-dashboard
             # lsh@2021-03-18: install.sh now calls out to npm
+            {% if osrelease == "18.04" %}
             - nodejs6
+            {% else %}
+            - nodejs
+            {% endif %}
             - npm-install
 
 #
