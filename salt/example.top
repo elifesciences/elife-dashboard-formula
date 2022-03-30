@@ -2,11 +2,10 @@
 base:
     '*':
         - elife
-        {% if osrelease == "18.04" %}
         - elife.nodejs6
+        {% if osrelease == "18.04" %}
         - elife.postgresql-11
         {% else %}
-        - elife.nodejs16
         - elife.postgresql
         {% endif %}
         - elife.nginx
