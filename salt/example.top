@@ -6,7 +6,7 @@ base:
         - elife.nodejs6
         - elife.postgresql-11
         {% else %}
-        - elife.nodejs
+        - elife.nodejs16
         - elife.postgresql
         {% endif %}
         - elife.nginx
