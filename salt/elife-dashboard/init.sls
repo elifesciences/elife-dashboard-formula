@@ -24,19 +24,6 @@ install-elife-dashboard:
         - require:
             - builder: install-elife-dashboard
 
-npm-install:
-    cmd.run:
-        - name: npm install
-        - cwd: /srv/elife-dashboard
-        - runas: {{ user }}
-        - require:
-            - install-elife-dashboard
-            - nodejs
-        # only run if `builder.git_latest of install-elife-dashboard` made changes
-        # 2020-12-04: added to stop the occasional 'npm install' command from failing
-        - onlyif:
-            - builder: install-elife-dashboard
-
 configure-elife-dashboard:
     file.managed:
         - user: {{ user }}
@@ -50,6 +37,23 @@ configure-elife-dashboard:
         - watch_in:
             - service: uwsgi-elife-dashboard
 
+install-js:
+    cmd.run:
+        - cwd: /srv/elife-dashboard
+        # lsh@2022-04-01: the `install-js.sh` script now does this.
+        # todo: switch to this once current set of open PRs are merged
+        #- name: ./install-js.sh
+        - name: npm install
+        - runas: {{ user }}
+        - require:
+            - install-elife-dashboard
+            - nodejs16
+        # only run if `builder.git_latest` of `install-elife-dashboard` made changes
+        # 2020-12-04: added to stop the occasional 'npm install' command from failing
+        - onlyif:
+            - builder: install-elife-dashboard
+
+install-python:
     cmd.run:
         - runas: {{ user }}
         - cwd: /srv/elife-dashboard/
@@ -58,9 +62,6 @@ configure-elife-dashboard:
             - uwsgi-pkg # builder-base.uwsgi , gcc is required to install uwsgi via pip
             - file: configure-elife-dashboard
             - install-elife-dashboard
-            # lsh@2021-03-18: install.sh now calls out to npm
-            - nodejs6
-            - npm-install
 
 #
 # auth
@@ -210,5 +211,6 @@ app-done:
         - require:
             - load-db-schema
             - configure-elife-dashboard
-            - npm-install
+            - install-js
+            - install-python
 

@@ -6,7 +6,7 @@ base:
         - elife.newrelic-python
         - elife.uwsgi
         - elife.no-more-daemon
-        - elife.nodejs6
+        - elife.nodejs16
         - elife-dashboard
         - elife-dashboard.uwsgi
         - elife-dashboard.scheduler
