@@ -4,6 +4,7 @@
 {% set app = pillar.elife_dashboard %}
 {% set user = pillar.elife.deploy_user.username %}
 {% set webuser = pillar.elife.webserver.username %}
+{% set osrelease = salt['grains.get']('oscodename') %}
 
 install-elife-dashboard:
     builder.git_latest:
