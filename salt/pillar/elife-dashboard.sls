@@ -1,6 +1,7 @@
 elife_dashboard:
     name: elife-dashboard
-    
+    publishing_service: http://localhost/api/queue_article_publication
+
     aws:
         username: null
         access_id: null

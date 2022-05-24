@@ -1,9 +1,9 @@
 {% set app = pillar.elife_article_scheduler %}
 {% set dash = pillar.elife_dashboard %}
 
-install-{{ app.name }}:
+install-elife-article-scheduler:
     git.latest:
-        - name: ssh://git@github.com/elifesciences/{{ app.name }}
+        - name: ssh://git@github.com/elifesciences/elife-article-scheduler
         - identity: {{ pillar.elife.projects_builder.key or '' }}
         # note: elife-article-scheduler is always deployed as master
         # lsh 2019-03-18: lets not muck about here
@@ -15,27 +15,27 @@ install-{{ app.name }}:
         #- branch: {{ salt['elife.cfg']('project.branch', 'master') }}
         - rev: master
         - branch: master
-        - target: /srv/{{ app.name }}
+        - target: /srv/elife-article-scheduler
         - force_fetch: True
         - force_checkout: True
         - force_reset: True
 
     file.directory:
-        - name: /srv/{{ app.name }}
+        - name: /srv/elife-article-scheduler
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
         - recurse:
             - user
             - group
         - require:
-            - git: install-{{ app.name }}
+            - git: install-elife-article-scheduler
 
     cmd.run:
         - name: ./install.sh
-        - cwd: /srv/{{ app.name }}
+        - cwd: /srv/elife-article-scheduler
         - runas: {{ pillar.elife.deploy_user.username }}
         - require:
-            - file: install-{{ app.name }}
+            - file: install-elife-article-scheduler
 
 #
 # db
@@ -63,7 +63,7 @@ postgresql-user-article-scheduler-hack:
         - superuser: True
         - login: True
 
-{{ app.name }}-db-user:
+elife-article-scheduler-db-user:
     postgres_user.present:
         - name: {{ app.db.username }}
         - encrypted: True
@@ -81,7 +81,7 @@ postgresql-user-article-scheduler-hack:
             - service: postgresql
             - postgresql-user-article-scheduler-hack
 
-{{ app.name }}-db-exists:
+elife-article-scheduler-db-exists:
     postgres_database.present:
         - name: {{ app.db.name }}
         - owner: {{ app.db.username }}
@@ -91,55 +91,75 @@ postgresql-user-article-scheduler-hack:
         - db_user: {{ pillar.elife.db_root.username }}
         - db_password: {{ pillar.elife.db_root.password }}
         - require:
-            - postgres_user: {{ app.name }}-db-user
+            - postgres_user: elife-article-scheduler-db-user
 
 #
 # configure
 #
 
-configure-{{ app.name }}:
+remove-old-settings.py:
+    cmd.run:
+        - cwd: /srv/elife-article-scheduler/src/core
+        - name: |
+            rm -f *_settings.py
+            # delete settings.py if it is a symlink
+            test -h settings.py && rm settings.py
+
+configure-elife-article-scheduler:
+    # lsh@2022-05-24: replaced with app.cfg file
+    #file.managed:
+    #    - name: /srv/elife-article-scheduler/src/core/settings.py
+    #    - source:
+    #        - salt://elife-dashboard/config/srv-elife-article-scheduler-src-core-{{ pillar.elife.env }}_settings.py
+    #        - salt://elife-dashboard/config/srv-elife-article-scheduler-default_settings.py
+    #    - user: {{ pillar.elife.deploy_user.username }}
+    #    - force: True
+    #    - template: jinja
+    #    - require:
+    #        - install-elife-article-scheduler
+    #        - postgres_database: elife-article-scheduler-db-exists
+
     file.managed:
-        - name: /srv/{{ app.name }}/src/core/settings.py
-        - source:
-            - salt://elife-dashboard/config/srv-{{ app.name }}-src-core-{{ pillar.elife.env }}_settings.py
-            - salt://elife-dashboard/config/srv-{{ app.name }}-default_settings.py
+        - name: /srv/elife-article-scheduler/app.cfg
+        - source: salt://elife-dashboard/config/srv-elife-article-scheduler-app.cfg
         - user: {{ pillar.elife.deploy_user.username }}
         - force: True
         - template: jinja
         - require:
-            - install-{{ app.name }}
-            - postgres_database: {{ app.name }}-db-exists
+            - remove-old-settings.py
+            - install-elife-article-scheduler
 
     # command collects css/js/fonts/etc in to a single place
     cmd.run:
-        - cwd: /srv/{{ app.name }}/
+        - cwd: /srv/elife-article-scheduler/
         - name: ./manage.sh collectstatic --noinput
         - runas: {{ pillar.elife.deploy_user.username }}
         - require:
-            - file: configure-{{ app.name }}
+            - file: configure-elife-article-scheduler
+            - elife-article-scheduler-db-exists
 
-configure-{{ app.name }}-log:
+configure-elife-article-scheduler-log:
     file.managed:
-        - name: /srv/{{ app.name }}/src/elife-article-scheduler.log
+        - name: /srv/elife-article-scheduler/src/elife-article-scheduler.log
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.webserver.username }}
         - mode: 664
         - require:
-            - file: configure-{{ app.name }}
+            - file: configure-elife-article-scheduler
 
 #
 # backup
 # bit of a hack for article-scheduler
 
 # separate descriptor living in different config directory so it doesn't conflict with elife-dashboard ubr config
-ubr-{{ app.name }}-db-backup:
+ubr-elife-article-scheduler-db-backup:
     file.managed:
         - name: /etc/ubr2/elife-article-scheduler-backup.yaml
         - source: salt://elife-dashboard/config/etc-ubr2-elife-article-scheduler-backup.yaml
         - makedirs: true
         - template: jinja
         - require:
-            - {{ app.name }}-db-exists
+            - elife-article-scheduler-db-exists
 
 # separate UBR config living alongside regular config
 elife-article-scheduler-ubr-config:
@@ -155,7 +175,7 @@ elife-article-scheduler-ubr-config:
             - install-ubr
 
 # 11:15pm every day
-{{ app.name }}-daily-backups:
+elife-article-scheduler-daily-backups:
     # only backup prod, end2end, adhoc and continuumtest instances
     {% if pillar.elife.env in ['dev', 'ci'] %}
     cron.absent:
@@ -163,7 +183,7 @@ elife-article-scheduler-ubr-config:
     cron.present:
     {% endif %}
         - user: root
-        - identifier: daily-{{ app.name }}-backups
+        - identifier: daily-elife-article-scheduler-backups
         - name: cd /opt/ubr/ && UBR_CFG_FILE=elife-article-scheduler-app.cfg ./ubr.sh >> /var/log/ubr-cron.log
         - minute: 15 # original in builder-base/backup-cron.sls is '0'
         - hour: 23
@@ -174,40 +194,40 @@ elife-article-scheduler-ubr-config:
 # webserver
 #
 
-{{ app.name }}-nginx-conf:
+elife-article-scheduler-nginx-conf:
     file.managed:
-        - name: /etc/nginx/sites-enabled/{{ app.name }}.conf
+        - name: /etc/nginx/sites-enabled/elife-article-scheduler.conf
         - template: jinja
-        - source: salt://elife-dashboard/config/etc-nginx-sitesenabled-{{ app.name }}.conf
+        - source: salt://elife-dashboard/config/etc-nginx-sitesenabled-elife-article-scheduler.conf
         - require:
             - cmd: create-production-web-user
         - listen_in:
             - service: nginx-server-service
 
-{{ app.name }}-uwsgi-conf:
+elife-article-scheduler-uwsgi-conf:
     file.managed:
-        - name: /srv/{{ app.name }}/uwsgi.ini
-        - source: salt://elife-dashboard/config/srv-{{ app.name }}-uwsgi.ini
+        - name: /srv/elife-article-scheduler/uwsgi.ini
+        - source: salt://elife-dashboard/config/srv-elife-article-scheduler-uwsgi.ini
         - template: jinja
         - require:
-            - install-{{ app.name }}
+            - install-elife-article-scheduler
 
-uwsgi-{{ app.name }}.socket:
+uwsgi-elife-article-scheduler.socket:
     service.running:
         - enable: True
-        - require_in: uwsgi-{{ app.name }}
+        - require_in: uwsgi-elife-article-scheduler
 
-uwsgi-{{ app.name }}:
+uwsgi-elife-article-scheduler:
     service.running:
         - enable: True
         - require:
             - uwsgi-pkg
-            - {{ app.name }}-uwsgi-conf
-            - {{ app.name }}-uwsgi-conf
-            - {{ app.name }}-nginx-conf
-            - configure-{{ app.name }}-log
+            - elife-article-scheduler-uwsgi-conf
+            - elife-article-scheduler-uwsgi-conf
+            - elife-article-scheduler-nginx-conf
+            - configure-elife-article-scheduler-log
         - watch:
-            - install-{{ app.name }}
+            - install-elife-article-scheduler
             # restart uwsgi if nginx service changes
             - service: nginx-server-service
 
@@ -215,8 +235,8 @@ uwsgi-{{ app.name }}:
 publish-articles-cron:
     cron.present:
         - user: {{ pillar.elife.deploy_user.username }}
-        - name: cd /srv/{{ app.name }}/ && ./manage.sh publish_articles
+        - name: cd /srv/elife-article-scheduler/ && ./manage.sh publish_articles
         - identifier: publish-articles-every-minute
         - minute: '*'
         - require:
-            - file: configure-{{ app.name }}
+            - file: configure-elife-article-scheduler
