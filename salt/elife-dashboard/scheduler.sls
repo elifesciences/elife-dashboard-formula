@@ -124,6 +124,7 @@ configure-elife-article-scheduler:
         - source: salt://elife-dashboard/config/srv-elife-article-scheduler-app.cfg
         - user: {{ pillar.elife.deploy_user.username }}
         - force: True
+        - follow_symlinks: False
         - template: jinja
         - require:
             - remove-old-settings.py
