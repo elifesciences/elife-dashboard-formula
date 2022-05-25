@@ -5,16 +5,17 @@ install-elife-article-scheduler:
     git.latest:
         - name: ssh://git@github.com/elifesciences/elife-article-scheduler
         - identity: {{ pillar.elife.projects_builder.key or '' }}
-        # note: elife-article-scheduler is always deployed as master
-        # lsh 2019-03-18: lets not muck about here
+        # lsh 2019-03-18: elife-article-scheduler is always deployed as master
         # build vars 'branch' is pinned at 'develop'. 
         # development is happening in master
         # article-scheduler has no pinned version support whatsoever
         # using build vars:
         #- rev: {{ salt['elife.cfg']('project.branch', 'master') }}
         #- branch: {{ salt['elife.cfg']('project.branch', 'master') }}
-        - rev: master
-        - branch: master
+        #- rev: master
+        #- branch: master
+        - rev: develop
+        - branch: develop
         - target: /srv/elife-article-scheduler
         - force_fetch: True
         - force_checkout: True
@@ -101,9 +102,10 @@ remove-old-settings.py:
     cmd.run:
         - cwd: /srv/elife-article-scheduler/src/core
         - name: |
+            set -e
             rm -f *_settings.py
             # delete settings.py if it is a symlink
-            test -h settings.py && rm settings.py
+            (test -h settings.py && rm settings.py) || true
 
 configure-elife-article-scheduler:
     # lsh@2022-05-24: replaced with app.cfg file
