@@ -12,10 +12,8 @@ install-elife-article-scheduler:
         # using build vars:
         #- rev: {{ salt['elife.cfg']('project.branch', 'master') }}
         #- branch: {{ salt['elife.cfg']('project.branch', 'master') }}
-        #- rev: master
-        #- branch: master
-        - rev: develop
-        - branch: develop
+        - rev: master
+        - branch: master
         - target: /srv/elife-article-scheduler
         - force_fetch: True
         - force_checkout: True
