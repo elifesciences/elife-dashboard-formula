@@ -96,29 +96,7 @@ elife-article-scheduler-db-exists:
 # configure
 #
 
-remove-old-settings.py:
-    cmd.run:
-        - cwd: /srv/elife-article-scheduler/src/core
-        - name: |
-            set -e
-            rm -f *_settings.py
-            # delete settings.py if it is a symlink
-            (test -h settings.py && rm settings.py) || true
-
 configure-elife-article-scheduler:
-    # lsh@2022-05-24: replaced with app.cfg file
-    #file.managed:
-    #    - name: /srv/elife-article-scheduler/src/core/settings.py
-    #    - source:
-    #        - salt://elife-dashboard/config/srv-elife-article-scheduler-src-core-{{ pillar.elife.env }}_settings.py
-    #        - salt://elife-dashboard/config/srv-elife-article-scheduler-default_settings.py
-    #    - user: {{ pillar.elife.deploy_user.username }}
-    #    - force: True
-    #    - template: jinja
-    #    - require:
-    #        - install-elife-article-scheduler
-    #        - postgres_database: elife-article-scheduler-db-exists
-
     file.managed:
         - name: /srv/elife-article-scheduler/app.cfg
         - source: salt://elife-dashboard/config/srv-elife-article-scheduler-app.cfg
@@ -127,7 +105,6 @@ configure-elife-article-scheduler:
         - follow_symlinks: False
         - template: jinja
         - require:
-            - remove-old-settings.py
             - install-elife-article-scheduler
 
     # command collects css/js/fonts/etc in to a single place
@@ -151,6 +128,7 @@ configure-elife-article-scheduler-log:
 #
 # backup
 # bit of a hack for article-scheduler
+#
 
 # separate descriptor living in different config directory so it doesn't conflict with elife-dashboard ubr config
 ubr-elife-article-scheduler-db-backup:
