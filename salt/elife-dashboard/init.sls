@@ -40,6 +40,15 @@ configure-elife-dashboard:
         - watch_in:
             - service: uwsgi-elife-dashboard
 
+configure-elife-dashboard-test:
+    file.managed:
+        - user: {{ user }}
+        - name: /srv/elife-dashboard/settings_test.py
+        - source: salt://elife-dashboard/config/srv-elife-dashboard-settings_test.py
+        - template: jinja
+        - require:
+            - install-elife-dashboard
+
 install-js:
     cmd.run:
         - cwd: /srv/elife-dashboard
