@@ -43,7 +43,7 @@ configure-elife-dashboard:
 configure-elife-dashboard-test:
     file.managed:
         - user: {{ user }}
-        - name: /srv/elife-dashboard/settings.py
+        - name: /srv/elife-dashboard/settings_test.py
         - source: salt://elife-dashboard/config/srv-elife-dashboard-settings_test.py
         - template: jinja
         - require:
