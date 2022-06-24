@@ -137,8 +137,6 @@ ubr-elife-article-scheduler-db-backup:
         - source: salt://elife-dashboard/config/etc-ubr2-elife-article-scheduler-backup.yaml
         - makedirs: true
         - template: jinja
-        - require:
-            - elife-article-scheduler-db-exists
 
 # separate UBR config living alongside regular config
 elife-article-scheduler-ubr-config:

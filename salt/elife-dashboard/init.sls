@@ -5,6 +5,8 @@
 {% set user = pillar.elife.deploy_user.username %}
 {% set webuser = pillar.elife.webserver.username %}
 {% set osrelease = salt['grains.get']('oscodename') %}
+{% set db_root_user = salt['elife.cfg']('project.rds_username', pillar.elife.db.root.username) %}
+{% set db_root_pass = salt['elife.cfg']('project.rds_password', pillar.elife.db.root.password) %}
 
 install-elife-dashboard:
     builder.git_latest:
@@ -119,6 +121,7 @@ process-queue-daemon-log-file:
 
 #
 # db
+# lsh@2022-06-24: I think a chunk of the below became builder-base-formula/salt/elife/postgresql-appdb.sls
 #
 
 app-db-user:
@@ -127,13 +130,11 @@ app-db-user:
         - encrypted: True
         - password: {{ app.db.password }}
         - refresh_password: True
-        - db_user: {{ pillar.elife.db_root.username }}
+        - db_user: {{ db_root_user }}
+        - db_password: {{ db_root_pass }}
         {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
-        - db_password: {{ salt['elife.cfg']('project.rds_password') }}
         - db_host: {{ salt['elife.cfg']('cfn.outputs.RDSHost') }}
         - db_port: {{ salt['elife.cfg']('cfn.outputs.RDSPort') }}
-        {% else %}
-        - db_password: {{ pillar.elife.db_root.password }}
         {% endif %}
         - createdb: True
 
@@ -141,8 +142,8 @@ app-db-exists:
     postgres_database.present:
         - name: {{ app.db.name }}
         - owner: {{ app.db.username }}
-        - db_user: {{ app.db.username }}
-        - db_password: {{ app.db.password }}
+        - db_user: {{ db_root_user }}
+        - db_password: {{ db_root_pass }}
         {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
         - db_host: {{ salt['elife.cfg']('cfn.outputs.RDSHost') }}
         - db_port: {{ salt['elife.cfg']('cfn.outputs.RDSPort') }}
