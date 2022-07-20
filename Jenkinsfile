@@ -1,1 +1,1 @@
-elifeFormula('elife-dashboard', '/srv/elife-dashboard/', null, ['s2004'])
+elifeFormula('elife-dashboard', '/srv/elife-dashboard/')
