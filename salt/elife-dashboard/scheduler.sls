@@ -1,6 +1,3 @@
-{% set app = pillar.elife_article_scheduler %}
-{% set dash = pillar.elife_dashboard %}
-
 install-elife-article-scheduler:
     git.latest:
         - name: ssh://git@github.com/elifesciences/elife-article-scheduler
@@ -53,42 +50,38 @@ extend:
 # executed there due to RDS being in use
 postgresql-user-article-scheduler-hack:
     postgres_user.present:
-        - name: {{ pillar.elife.db_root.username }}
-        - password: {{ pillar.elife.db_root.password }}
+        - name: {{ pillar.elife.db.root.username }}
+        - password: {{ pillar.elife.db.root.password }}
         - refresh_password: True
         #- db_host: localhost
-        - db_password: {{ pillar.elife.db_root.password }}
+        - db_password: {{ pillar.elife.db.root.password }}
         # doesn't work on RDS instances
         - superuser: True
         - login: True
 
 elife-article-scheduler-db-user:
     postgres_user.present:
-        - name: {{ app.db.username }}
+        - name: {{ pillar.elife_article_scheduler.db.username }}
         - encrypted: True
-        - password: {{ app.db.password }}
+        - password: {{ pillar.elife_article_scheduler.db.password }}
         - refresh_password: True
         
         - db_host: localhost
-        - db_user: {{ pillar.elife.db_root.username }}
-        - db_password: {{ pillar.elife.db_root.password }}
-        #{% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
-        #- db_host: {{ salt['elife.cfg']('cfn.outputs.RDSHost') }}
-        #- db_port: {{ salt['elife.cfg']('cfn.outputs.RDSPort') }}
-        #{% endif %}
+        - db_user: {{ pillar.elife.db.root.username }}
+        - db_password: {{ pillar.elife.db.root.password }}
         - require:
             - service: postgresql
             - postgresql-user-article-scheduler-hack
 
 elife-article-scheduler-db-exists:
     postgres_database.present:
-        - name: {{ app.db.name }}
-        - owner: {{ app.db.username }}
+        - name: {{ pillar.elife_article_scheduler.db.name }}
+        - owner: {{ pillar.elife_article_scheduler.db.username }}
         - owner_recurse: true
         - db_host: localhost
         - db_port: 5432
-        - db_user: {{ pillar.elife.db_root.username }}
-        - db_password: {{ pillar.elife.db_root.password }}
+        - db_user: {{ pillar.elife.db.root.username }}
+        - db_password: {{ pillar.elife.db.root.password }}
         - require:
             - postgres_user: elife-article-scheduler-db-user
 
