@@ -62,7 +62,7 @@ postgresql-user-article-scheduler-hack:
 elife-article-scheduler-db-user:
     postgres_user.present:
         - name: {{ pillar.elife_article_scheduler.db.username }}
-        - encrypted: True
+        - encrypted: scram-sha-256
         - password: {{ pillar.elife_article_scheduler.db.password }}
         - refresh_password: True
         
