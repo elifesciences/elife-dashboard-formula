@@ -136,7 +136,7 @@ process-queue-daemon-log-file:
 app-db-user:
     postgres_user.present:
         - name: {{ app.db.username }}
-        - encrypted: True
+        - encrypted: scram-sha-256
         - password: {{ app.db.password }}
         - refresh_password: True
         - db_user: {{ db_root_user }}
