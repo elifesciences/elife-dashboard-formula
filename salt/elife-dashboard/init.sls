@@ -31,9 +31,7 @@ configure-elife-dashboard:
     file.managed:
         - user: {{ user }}
         - name: /srv/elife-dashboard/settings.py
-        - source:
-            - salt://elife-dashboard/config/srv-app-dashboard-{{ pillar.elife.env }}_settings.py
-            - salt://elife-dashboard/config/srv-app-dashboard-default_settings.py
+        - source: salt://elife-dashboard/config/srv-elife-dashboard-settings.py
         - template: jinja
         - require:
             - install-elife-dashboard
@@ -41,21 +39,13 @@ configure-elife-dashboard:
             - service: uwsgi-elife-dashboard
 
 configure-elife-dashboard-test:
-    file.managed:
-        - user: {{ user }}
+    file.absent:
         - name: /srv/elife-dashboard/settings_test.py
-        - source: salt://elife-dashboard/config/srv-elife-dashboard-settings_test.py
-        - template: jinja
-        - require:
-            - install-elife-dashboard
 
 install-js:
     cmd.run:
         - cwd: /srv/elife-dashboard
-        # lsh@2022-04-01: the `install-js.sh` script now does this.
-        # todo: switch to this once current set of open PRs are merged
-        #- name: ./install-js.sh
-        - name: npm install
+        - name: ./install-js.sh
         - runas: {{ user }}
         - require:
             - install-elife-dashboard
