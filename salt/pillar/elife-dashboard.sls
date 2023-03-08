@@ -2,6 +2,11 @@ elife_dashboard:
     name: elife-dashboard
     publishing_service: http://localhost/api/queue_article_publication
 
+    preview_base_url: https://elifesciences.org/
+    log_level: INFO # DEBUG, INFO, WARN, ERROR
+    event_monitor_queue:
+    workflow_starter_queue:
+
     aws:
         username: null
         access_id: null
