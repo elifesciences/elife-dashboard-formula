@@ -1,6 +1,6 @@
 {% set app = pillar.elife_dashboard %}
-application_port = None
-preview_base_url = "{{ app.preview_base_url }}" # # used as read only, for generating links
+application_port = None # development server port, unused outside of dev
+preview_base_url = "{{ app.preview_base_url }}" # used as read only, for generating links
 
 # Article scheduler settings
 article_scheduler_url = 'http://localhost:8080/schedule/v1/article_scheduled_status/'
