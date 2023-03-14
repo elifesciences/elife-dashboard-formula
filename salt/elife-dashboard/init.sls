@@ -100,6 +100,10 @@ app-log-file:
         - group: {{ webuser }}
         - mode: 660
 
+app-log-file-logrotate:
+    file.managed:
+        - name: /etc/logrotate.d/app-log
+        - source: salt://elife-dashboard/config/etc-logrotate.d-app-log
 
 app-syslog-conf:
     file.managed:
