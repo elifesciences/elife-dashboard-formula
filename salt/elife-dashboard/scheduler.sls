@@ -118,6 +118,11 @@ configure-elife-article-scheduler-log:
         - require:
             - file: configure-elife-article-scheduler
 
+logrotate-elife-article-scheduler-log:
+    file.managed:
+        - name: /etc/logrotate.d/elife-article-scheduler
+        - source: salt://elife-dashboard/config/etc-logrotate.d-elife-article-scheduler
+
 #
 # backup
 # bit of a hack for article-scheduler
