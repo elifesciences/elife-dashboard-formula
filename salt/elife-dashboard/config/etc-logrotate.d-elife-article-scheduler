@@ -1,0 +1,8 @@
+/srv/elife-article-scheduler/src/elife-article-scheduler.log {
+    daily
+    rotate 7
+    notifempty
+    missingok
+    compress
+    copytruncate
+}
