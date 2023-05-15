@@ -1,0 +1,7 @@
+/var/log/app.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    maxage 14
+}

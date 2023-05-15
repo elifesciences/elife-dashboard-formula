@@ -1,12 +1,11 @@
 base:
     '*':
         - elife
-        - elife.postgresql-11
+        - elife.postgresql-12
         - elife.nginx
         - elife.newrelic-python
         - elife.uwsgi
-        - elife.no-more-daemon
-        - elife.nodejs6
+        - elife.nodejs16
         - elife-dashboard
         - elife-dashboard.uwsgi
         - elife-dashboard.scheduler

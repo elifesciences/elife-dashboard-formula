@@ -4,6 +4,9 @@
 {% set app = pillar.elife_dashboard %}
 {% set user = pillar.elife.deploy_user.username %}
 {% set webuser = pillar.elife.webserver.username %}
+{% set osrelease = salt['grains.get']('oscodename') %}
+{% set db_root_user = salt['elife.cfg']('project.rds_username', pillar.elife.db.root.username) %}
+{% set db_root_pass = salt['elife.cfg']('project.rds_password', pillar.elife.db.root.password) %}
 
 install-elife-dashboard:
     builder.git_latest:
@@ -24,32 +27,35 @@ install-elife-dashboard:
         - require:
             - builder: install-elife-dashboard
 
-npm-install:
-    cmd.run:
-        - name: npm install
-        - cwd: /srv/elife-dashboard
-        - runas: {{ user }}
-        - require:
-            - install-elife-dashboard
-            - nodejs
-        # only run if `builder.git_latest of install-elife-dashboard` made changes
-        # 2020-12-04: added to stop the occasional 'npm install' command from failing
-        - onlyif:
-            - builder: install-elife-dashboard
-
 configure-elife-dashboard:
     file.managed:
         - user: {{ user }}
         - name: /srv/elife-dashboard/settings.py
-        - source:
-            - salt://elife-dashboard/config/srv-app-dashboard-{{ pillar.elife.env }}_settings.py
-            - salt://elife-dashboard/config/srv-app-dashboard-default_settings.py
+        - source: salt://elife-dashboard/config/srv-elife-dashboard-settings.py
         - template: jinja
         - require:
             - install-elife-dashboard
         - watch_in:
             - service: uwsgi-elife-dashboard
 
+configure-elife-dashboard-test:
+    file.absent:
+        - name: /srv/elife-dashboard/settings_test.py
+
+install-js:
+    cmd.run:
+        - cwd: /srv/elife-dashboard
+        - name: ./install-js.sh
+        - runas: {{ user }}
+        - require:
+            - install-elife-dashboard
+            - nodejs16
+        # only run if `builder.git_latest` of `install-elife-dashboard` made changes
+        # 2020-12-04: added to stop the occasional 'npm install' command from failing
+        - onlyif:
+            - builder: install-elife-dashboard
+
+install-python:
     cmd.run:
         - runas: {{ user }}
         - cwd: /srv/elife-dashboard/
@@ -58,9 +64,6 @@ configure-elife-dashboard:
             - uwsgi-pkg # builder-base.uwsgi , gcc is required to install uwsgi via pip
             - file: configure-elife-dashboard
             - install-elife-dashboard
-            # lsh@2021-03-18: install.sh now calls out to npm
-            - nodejs6
-            - npm-install
 
 #
 # auth
@@ -97,6 +100,10 @@ app-log-file:
         - group: {{ webuser }}
         - mode: 660
 
+app-log-file-logrotate:
+    file.managed:
+        - name: /etc/logrotate.d/app-log
+        - source: salt://elife-dashboard/config/etc-logrotate.d-app-log
 
 app-syslog-conf:
     file.managed:
@@ -117,21 +124,20 @@ process-queue-daemon-log-file:
 
 #
 # db
+# lsh@2022-06-24: I think a chunk of the below became builder-base-formula/salt/elife/postgresql-appdb.sls
 #
 
 app-db-user:
     postgres_user.present:
         - name: {{ app.db.username }}
-        - encrypted: True
+        - encrypted: scram-sha-256
         - password: {{ app.db.password }}
         - refresh_password: True
-        - db_user: {{ pillar.elife.db_root.username }}
+        - db_user: {{ db_root_user }}
+        - db_password: {{ db_root_pass }}
         {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
-        - db_password: {{ salt['elife.cfg']('project.rds_password') }}
         - db_host: {{ salt['elife.cfg']('cfn.outputs.RDSHost') }}
         - db_port: {{ salt['elife.cfg']('cfn.outputs.RDSPort') }}
-        {% else %}
-        - db_password: {{ pillar.elife.db_root.password }}
         {% endif %}
         - createdb: True
 
@@ -139,8 +145,8 @@ app-db-exists:
     postgres_database.present:
         - name: {{ app.db.name }}
         - owner: {{ app.db.username }}
-        - db_user: {{ app.db.username }}
-        - db_password: {{ app.db.password }}
+        - db_user: {{ db_root_user }}
+        - db_password: {{ db_root_pass }}
         {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
         - db_host: {{ salt['elife.cfg']('cfn.outputs.RDSHost') }}
         - db_port: {{ salt['elife.cfg']('cfn.outputs.RDSPort') }}
@@ -210,5 +216,6 @@ app-done:
         - require:
             - load-db-schema
             - configure-elife-dashboard
-            - npm-install
+            - install-js
+            - install-python
 
