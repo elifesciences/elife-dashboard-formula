@@ -3,7 +3,6 @@ base:
         - elife
         - elife.postgresql-12
         - elife.nginx
-        - elife.newrelic-python
         - elife.uwsgi
         - elife.nodejs16
         - elife-dashboard
