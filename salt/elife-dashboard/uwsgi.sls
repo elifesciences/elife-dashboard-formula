@@ -31,14 +31,13 @@ app-uwsgi-conf:
 uwsgi-elife-dashboard.socket:
     service.running:
         - enable: True
-        - require_in:
-            - uwsgi-app
 
 uwsgi-elife-dashboard:
     service.running:
         - enable: True
         - require:
             - uwsgi-params
+            - uwsgi-elife-dashboard.socket
             - app-uwsgi-conf
             - app-nginx-conf
             - app-log-file
