@@ -169,7 +169,23 @@ elife-article-scheduler-daily-backups:
 # webserver
 #
 
-elife-article-scheduler-nginx-conf:
+{% if pillar.elife.webserver.app == "caddy" %}
+
+elife-article-scheduler-vhost-conf:
+    file.managed:
+        - name: /etc/caddy/sites.d/elife-article-scheduler
+        - source: salt://elife-dashboard/config/etc-caddy-sites.d-elife-article-scheduler
+        - template: jinja
+        - require_in:
+            - cmd: caddy-validate-config
+            - service: uwsgi-elife-article-scheduler
+        - listen_in:
+            # restart caddy if vhost conf changes
+            - service: caddy-server-service
+
+{% else %}
+
+elife-article-scheduler-vhost-conf:
     file.managed:
         - name: /etc/nginx/sites-enabled/elife-article-scheduler.conf
         - template: jinja
@@ -177,7 +193,10 @@ elife-article-scheduler-nginx-conf:
         - require:
             - cmd: create-production-web-user
         - listen_in:
+            # restart nginx if vhost conf changes
             - service: nginx-server-service
+
+{% endif %}
 
 elife-article-scheduler-uwsgi-conf:
     file.managed:
@@ -199,12 +218,17 @@ uwsgi-elife-article-scheduler:
             - uwsgi-pkg
             - elife-article-scheduler-uwsgi-conf
             - elife-article-scheduler-uwsgi-conf
-            - elife-article-scheduler-nginx-conf
+            - elife-article-scheduler-vhost-conf
             - configure-elife-article-scheduler-log
         - watch:
             - install-elife-article-scheduler
+            {% if pillar.elife.webserver.app == "caddy" %}
             # restart uwsgi if nginx service changes
             - service: nginx-server-service
+            {% else %}
+            # restart uwsgi if caddy service changes
+            - service: caddy-server-service
+            {% endif %}
 
 # publish articles every minute
 publish-articles-cron:

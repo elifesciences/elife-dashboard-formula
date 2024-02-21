@@ -69,12 +69,14 @@ install-python:
 # auth
 #
 
+{% if pillar.elife.webserver.app != "caddy" %}
 # credentials for the production guys to use
 create-production-web-user:
     cmd.run:
         - name: sudo htpasswd -b -c /etc/nginx/.production-htpasswd {{ app.basic_auth.username }} {{ app.basic_auth.password }}
         - require:
             - pkg: nginx-server
+{% endif %}
 
 aws-credentials:
     file.managed:
