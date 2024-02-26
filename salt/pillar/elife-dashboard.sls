@@ -22,6 +22,8 @@ elife_dashboard:
     basic_auth:
         username: username
         password: password
+        # created with `caddy hash-password`
+        caddy_password_hash: "$2a$14$jeFTFIY1bTwOcu9wukSMNOOwr0520Z46lywGMZ2jkiIysZtrCkzrW"
 
 elife_article_scheduler:
     name: elife-article-scheduler
@@ -46,10 +48,14 @@ elife_dashboard_2:
         port: 8081
 
 elife:
+    webserver:
+        app: caddy
+
     uwsgi:
         services:
             elife-dashboard:
                 folder: /srv/elife-dashboard
+                protocol: http-socket
             elife-article-scheduler:
                 folder: /srv/elife-article-scheduler
-
+                protocol: http-socket

@@ -1,4 +1,20 @@
-app-nginx-conf:
+{% if pillar.elife.webserver.app == "caddy" %}
+
+app-vhost-conf:
+    file.managed:
+        - name: /etc/caddy/sites.d/elife-dashboard
+        - source: salt://elife-dashboard/config/etc-caddy-sites.d-elife-dashboard
+        - template: jinja
+        - require_in:
+            - cmd: caddy-validate-config
+            - service: uwsgi-elife-dashboard
+        - watch_in:
+            # restart caddy if site config changes
+            - service: caddy-server-service
+
+{% else %}
+
+app-vhost-conf:
     file.managed:
         - name: /etc/nginx/sites-enabled/app.conf
         - template: jinja
@@ -20,6 +36,8 @@ dashboard-unencrypted-redirect:
         - name: /etc/nginx/sites-enabled/unencrypted-redirect.conf
 {% endif %}
 
+{% endif %}
+
 app-uwsgi-conf:
     file.managed:
         - name: /srv/elife-dashboard/uwsgi.ini
@@ -39,7 +57,7 @@ uwsgi-elife-dashboard:
             - uwsgi-params
             - uwsgi-elife-dashboard.socket
             - app-uwsgi-conf
-            - app-nginx-conf
+            - app-vhost-conf
             - app-log-file
         - watch:
             - install-elife-dashboard

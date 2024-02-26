@@ -2,10 +2,11 @@ base:
     '*':
         - elife
         - elife.postgresql-12
-        - elife.nginx
+        #- elife.nginx
+        - elife.disable-nginx
+        - elife.caddy
         - elife.uwsgi
         - elife.nodejs16
         - elife-dashboard
         - elife-dashboard.uwsgi
         - elife-dashboard.scheduler
-        #- elife-dashboard.dashboard2
