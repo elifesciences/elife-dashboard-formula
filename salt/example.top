@@ -1,7 +1,7 @@
 base:
     '*':
         - elife
-        - elife.postgresql-13
+        - elife.postgresql-14
         #- elife.nginx
         - elife.disable-nginx
         - elife.caddy
