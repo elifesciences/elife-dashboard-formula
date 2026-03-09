@@ -1,5 +1,5 @@
-# 2019-03-15, note: this was an attempt to make the installation and configuration of python web apps more generic with 
-# an eye to replacing their formula with a single universal one managed 
+# 2019-03-15, note: this was an attempt to make the installation and configuration of python web apps more generic with
+# an eye to replacing their formula with a single universal one managed
 
 {% set app = pillar.elife_dashboard %}
 {% set user = pillar.elife.deploy_user.username %}
@@ -163,7 +163,7 @@ load-db-schema:
         - env:
             - PGPASSWORD: {{ app.db.password }}
         - name: |
-            set -e 
+            set -e
             psql --host={{ salt['elife.cfg']('cfn.outputs.RDSHost') or app.db.host }} \
                 --port={{ salt['elife.cfg']('cfn.outputs.RDSPort') or app.db.port }} \
                 --username={{ app.db.username }} \
@@ -195,6 +195,14 @@ ubr-app-db-backup:
         - require:
             - load-db-schema
 
+
+configure-dashboard-authentication-dotenv:
+    file.managed:
+        - user: {{ pillar.elife.deploy_user.username }}
+        - name: /home/{{ pillar.elife.deploy_user.username }}/dashboard-login.env
+        - source: salt://elife-dashboard/config/home-deploy-user-dashboard-login.env
+        - template: jinja
+
 #
 # testing
 #
@@ -213,11 +221,10 @@ chromium:
 
 # hook to allow the general purpose daemon code to do it's thing
 app-done:
-    cmd.run: 
+    cmd.run:
         - name: echo "app is done installing"
         - require:
             - load-db-schema
             - configure-elife-dashboard
             - install-js
             - install-python
-
